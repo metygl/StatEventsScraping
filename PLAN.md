@@ -41,6 +41,7 @@ StatEventsScraping/
 │   ├── run_scraper.sh        # Shell script for cron
 │   └── serve_local.py        # Local HTTP server
 ├── requirements.txt
+├── vercel.json              # Vercel deployment config
 └── pyproject.toml
 ```
 
@@ -117,6 +118,11 @@ StatEventsScraping/
 16. Unit tests for DateParser (21 tests)
 17. Unit tests for Event model (18 tests)
 18. Test fixtures in conftest.py
+
+### Phase 8: Deployment ✅ (NEW)
+19. GitHub repository - https://github.com/metygl/StatEventsScraping
+20. Vercel auto-deployment - serves `output/events.html` at root URL
+21. Vercel config (`vercel.json`) - URL rewrite for clean paths
 
 ## Key Technical Decisions
 

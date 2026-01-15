@@ -1,6 +1,6 @@
 # Statistics Events Scraper - Progress Tracker
 
-## Current Status: All Scrapers Working + Polished UI
+## Current Status: Deployed to Vercel
 
 **Last Updated:** 2026-01-14 (Night)
 
@@ -77,6 +77,14 @@
 | Test fixtures | ✅ Complete | `tests/conftest.py` |
 
 **Total: 39 unit tests passing**
+
+### Phase 8: Deployment ✅ (NEW)
+
+| Task | Status | Notes |
+|------|--------|-------|
+| GitHub repository | ✅ Complete | https://github.com/metygl/StatEventsScraping |
+| Vercel auto-deploy | ✅ Complete | Auto-deploys `output/events.html` on push to main |
+| Vercel config | ✅ Complete | `vercel.json` - rewrites root to events.html |
 
 ---
 
@@ -388,8 +396,12 @@ python -m pytest tests/ -v
 
 ### View Output
 ```bash
+# Local
 python scripts/serve_local.py
 # Open http://localhost:8000/events.html
+
+# Production
+# Visit your Vercel URL (auto-deploys on push to main)
 ```
 
 ### Configure Date Range
