@@ -10,7 +10,8 @@ env/
 .env
 
 # Output files (generated)
-output/
+output/*
+!output/events.html
 logs/
 
 # IDE
