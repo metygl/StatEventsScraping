@@ -1,0 +1,31 @@
+Center for Targeted Machine Learning and Causal Inference: https://ctml.berkeley.edu/
+PSI events https://www.psiweb.org/events/psi-events
+DahShu webinars https://dahshu.wildapricot.org/events
+Harvard T.H. Chan School of Public Health (HSPH) Department of Epidemiology Seminar Series: https://www.hsph.harvard.edu/epidemiology/epi-seminar-series/
+New England Statistical Society: https://nestat.org/
+NISS-Merck Calendar of Events: https://www.niss.org/events
+ASA webinars https://www.amstat.org/ASA/Education/Web-Based-Lectures.aspx
+ASA Calendar of Events: https://ww2.amstat.org/dateline/index.cfm?fuseaction=main
+ICSA Events: https://www.icsa.org/category/events/
+McGill Biostatistics Seminars: https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics
+Boston Chapter Upcoming Events: https://community.amstat.org/bostonchapter/upcoming-events/upcoming-events
+Georgia Chapter Upcoming Events: https://www.amstatgeorgia.org/events
+New Jersey Chapter: http://asanjchapter.org/
+San Diego Chapter: https://community.amstat.org/sdasa/home
+Philadelphia Chapter: https://community.amstat.org/philadelphia/home
+ENAR Webinar Series: https://www.enar.org/education/
+UCSF Department of Epidemiology & Biostatistics Events: https://epibiostat.ucsf.edu/events
+IBS Meetings Calendar: https://www.biometricsociety.org/meetings/events
+Duke-Margolis Events: https://healthpolicy.duke.edu/events
+Dana Farber Cancer Institute Data Science Events: https://ds.dfci.harvard.edu/events/
+ISPOR Events and Education: https://www.ispor.org/conferences-education/conferences/upcoming-conferences
+Basel Biometric Society: https://baselbiometrics.github.io/home/docs/
+FDA Events: https://www.fda.gov/news-events
+Royal Statistical Society (RSS) Events Calendar: https://rss.org.uk/training-events/events/
+George Mason University Statistics Seminars: https://statistics.gmu.edu/connections/statistics-seminars
+University of Cambridge Medical Research Council (MRC) events: https://www.mrc-bsu.cam.ac.uk/events/
+Washington Statistical Society: https://washstat.org/
+Posit Events: https://posit.co/events/
+R Conferences: https://www.r-project.org/conferences/
+Pharmaceutical & BioScience Society (PBSS) – San Francisco Bay: https://www.pbss.org/chapter/SF-Bay
+Instats Seminars: https://instats.org/results?view=Seminars

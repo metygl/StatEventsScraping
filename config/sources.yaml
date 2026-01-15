@@ -1,0 +1,166 @@
+# Site source definitions and scraper mappings
+# enabled: true/false controls whether the source is scraped
+
+sources:
+  # ========== INITIAL 8 SCRAPERS (enabled) ==========
+
+  - name: "Instats Seminar"
+    url: "https://instats.org/results?view=Seminars"
+    scraper: "organizations.instats"
+    enabled: true
+
+  - name: "FDA"
+    url: "https://www.fda.gov/news-events"
+    scraper: "government.fda"
+    enabled: true
+
+  - name: "NISS"
+    url: "https://www.niss.org/events"
+    scraper: "organizations.niss"
+    enabled: true
+
+  - name: "DahShu"
+    url: "https://dahshu.wildapricot.org/events"
+    scraper: "organizations.dahshu"
+    enabled: true
+
+  - name: "Harvard HSPH Epidemiology"
+    url: "https://hsph.harvard.edu/department/epidemiology/seminar-series/"
+    scraper: "academic.harvard_hsph"
+    enabled: true
+
+  - name: "ASA Webinars"
+    url: "https://www.amstat.org/ASA/Education/Web-Based-Lectures.aspx"
+    scraper: "associations.asa_webinars"
+    enabled: true
+
+  - name: "PSI"
+    url: "https://www.psiweb.org/events/psi-events"
+    scraper: "associations.psi"
+    enabled: true
+
+  - name: "Posit"
+    url: "https://posit.co/events/"
+    scraper: "tech.posit"
+    enabled: true
+
+  # ========== FUTURE SCRAPERS (disabled for now) ==========
+
+  # Academic
+  - name: "CTML Berkeley"
+    url: "https://ctml.berkeley.edu/"
+    scraper: "academic.ctml_berkeley"
+    enabled: false
+
+  - name: "McGill Biostatistics"
+    url: "https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics"
+    scraper: "academic.mcgill"
+    enabled: false
+
+  - name: "UCSF Epidemiology"
+    url: "https://epibiostat.ucsf.edu/events"
+    scraper: "academic.ucsf"
+    enabled: false
+
+  - name: "Duke-Margolis"
+    url: "https://healthpolicy.duke.edu/events"
+    scraper: "academic.duke_margolis"
+    enabled: false
+
+  - name: "Cambridge MRC"
+    url: "https://www.mrc-bsu.cam.ac.uk/events/"
+    scraper: "academic.cambridge_mrc"
+    enabled: false
+
+  - name: "GMU Statistics"
+    url: "https://statistics.gmu.edu/connections/statistics-seminars"
+    scraper: "academic.gmu"
+    enabled: false
+
+  - name: "Dana Farber"
+    url: "https://ds.dfci.harvard.edu/events/"
+    scraper: "academic.dana_farber"
+    enabled: false
+
+  # Associations
+  - name: "ASA Calendar"
+    url: "https://ww2.amstat.org/dateline/index.cfm?fuseaction=main"
+    scraper: "associations.asa_calendar"
+    enabled: false
+
+  - name: "ASA Boston"
+    url: "https://community.amstat.org/bostonchapter/upcoming-events/upcoming-events"
+    scraper: "associations.asa_boston"
+    enabled: false
+
+  - name: "ASA Georgia"
+    url: "https://www.amstatgeorgia.org/events"
+    scraper: "associations.asa_georgia"
+    enabled: false
+
+  - name: "ASA New Jersey"
+    url: "http://asanjchapter.org/"
+    scraper: "associations.asa_newjersey"
+    enabled: false
+
+  - name: "ASA San Diego"
+    url: "https://community.amstat.org/sdasa/home"
+    scraper: "associations.asa_sandiego"
+    enabled: false
+
+  - name: "ASA Philadelphia"
+    url: "https://community.amstat.org/philadelphia/home"
+    scraper: "associations.asa_philadelphia"
+    enabled: false
+
+  - name: "ICSA"
+    url: "https://www.icsa.org/category/events/"
+    scraper: "associations.icsa"
+    enabled: false
+
+  - name: "New England Statistical Society"
+    url: "https://nestat.org/"
+    scraper: "associations.nestat"
+    enabled: false
+
+  - name: "ENAR"
+    url: "https://www.enar.org/education/"
+    scraper: "associations.enar"
+    enabled: false
+
+  - name: "IBS"
+    url: "https://www.biometricsociety.org/meetings/events"
+    scraper: "associations.ibs"
+    enabled: false
+
+  - name: "RSS"
+    url: "https://rss.org.uk/training-events/events/"
+    scraper: "associations.rss"
+    enabled: false
+
+  - name: "PBSS SF Bay"
+    url: "https://www.pbss.org/chapter/SF-Bay"
+    scraper: "associations.pbss"
+    enabled: false
+
+  - name: "Washington Statistical Society"
+    url: "https://washstat.org/"
+    scraper: "associations.washington_stat"
+    enabled: false
+
+  # Organizations
+  - name: "ISPOR"
+    url: "https://www.ispor.org/conferences-education/conferences/upcoming-conferences"
+    scraper: "organizations.ispor"
+    enabled: false
+
+  - name: "Basel Biometric Society"
+    url: "https://baselbiometrics.github.io/home/docs/"
+    scraper: "organizations.basel_biometric"
+    enabled: false
+
+  # Tech
+  - name: "R Conferences"
+    url: "https://www.r-project.org/conferences/"
+    scraper: "tech.r_conferences"
+    enabled: false

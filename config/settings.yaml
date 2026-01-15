@@ -1,0 +1,41 @@
+# Main application settings
+
+# Date range settings
+date_range:
+  # Mode: "rolling" (days from today) or "fixed" (explicit dates)
+  mode: "rolling"
+  # For rolling mode: number of days to look ahead
+  days_ahead: 14
+  # For fixed mode: explicit start/end dates (uncomment to use)
+  # start_date: "2026-01-14"
+  # end_date: "2026-01-30"
+
+# Output settings
+output:
+  directory: "output"
+  html_file: "events.html"
+  generate_text: true
+  text_file: "events.txt"
+
+# Browser settings
+browser:
+  headless: true
+  slow_mo: 0
+  timeout: 30000
+
+# Scraping settings
+scraping:
+  max_concurrent: 5
+  request_delay: 1.0
+  max_retries: 3
+  retry_delay: 2.0
+
+# Logging settings
+logging:
+  level: "INFO"
+  file: "logs/scraper.log"
+  max_bytes: 10485760
+  backup_count: 5
+
+# Timezone
+timezone: "America/Los_Angeles"
