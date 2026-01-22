@@ -2,6 +2,7 @@
 Static HTML and text output generation from scraped events.
 """
 
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
@@ -114,6 +115,73 @@ class HTMLGenerator:
             lines.append("")
 
         return "\n".join(lines)
+
+    def generate_export_page(
+        self,
+        events: List[Event],
+        output_path: str,
+        date_range: tuple = None,
+    ) -> str:
+        """
+        Generate export HTML page with event selection and export functionality.
+
+        Args:
+            events: List of Event objects
+            output_path: Path to write HTML file
+            date_range: Optional tuple of (start_date, end_date) for header
+
+        Returns:
+            Path to generated file
+        """
+        # Sort events by date
+        sorted_events = sorted(events, key=lambda e: e.start_datetime)
+
+        # Create JSON-serializable event data for JavaScript
+        events_json = json.dumps(
+            [
+                {
+                    "title": e.title,
+                    "url": e.url,
+                    "source": e.source,
+                    "speakers": e.speakers,
+                    "date_range": e.format_date_range(),
+                    "location": e.format_location(),
+                    "cost": e.format_cost(),
+                }
+                for e in sorted_events
+            ],
+            ensure_ascii=False,
+        )
+
+        # Get unique sources for filter dropdown
+        sources = sorted(set(e.source for e in sorted_events))
+
+        # Prepare template context
+        pst = pytz.timezone("America/Los_Angeles")
+        context = {
+            "events": sorted_events,
+            "events_json": events_json,
+            "sources": sources,
+            "generated_at": datetime.now(pst).strftime("%Y-%m-%d %H:%M:%S PST"),
+            "total_events": len(events),
+            "date_range_start": (
+                date_range[0].strftime("%B %d, %Y") if date_range else None
+            ),
+            "date_range_end": (
+                date_range[1].strftime("%B %d, %Y") if date_range else None
+            ),
+        }
+
+        # Render template
+        template = self.env.get_template("export.html.j2")
+        html_content = template.render(**context)
+
+        # Write to file
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text(html_content, encoding="utf-8")
+
+        return str(output_file)
 
     def _group_by_date(self, events: List[Event]) -> Dict[str, List[Event]]:
         """Group events by date for organized display."""

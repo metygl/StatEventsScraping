@@ -176,6 +176,11 @@ class EventScraperApp:
         generator.generate(events, str(html_path), date_range)
         logger.info(f"Generated HTML: {html_path}")
 
+        # Generate export page
+        export_path = output_dir / "export.html"
+        generator.generate_export_page(events, str(export_path), date_range)
+        logger.info(f"Generated export page: {export_path}")
+
         # Generate text if configured
         if output_config.get("generate_text", False):
             text_path = output_dir / output_config["text_file"]

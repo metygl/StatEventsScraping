@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/output/events.html" }
+    { "source": "/", "destination": "/output/events.html" },
+    { "source": "/export", "destination": "/output/export.html" }
   ],
   "headers": [
     {

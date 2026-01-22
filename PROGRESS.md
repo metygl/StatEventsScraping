@@ -2,7 +2,33 @@
 
 ## Current Status: Deployed to Vercel
 
-**Last Updated:** 2026-01-14 (Night)
+**Last Updated:** 2026-01-21
+
+---
+
+## Recent Update: Export Page Feature
+
+### Phase 9: Export Page ✅ (NEW)
+
+| Task | Status | File(s) |
+|------|--------|---------|
+| Export HTML template | ✅ Complete | `src/output/templates/export.html.j2` |
+| HTMLGenerator export method | ✅ Complete | `src/output/html_generator.py` |
+| Main orchestration update | ✅ Complete | `src/main.py` |
+| Navigation link | ✅ Complete | `src/output/templates/events.html.j2` |
+| Vercel routing | ✅ Complete | `vercel.json` |
+| Unit tests | ✅ Complete (15 tests) | `tests/test_html_generator.py` |
+
+**Features:**
+- Separate export page (`export.html`) with event selection
+- Checkboxes for selecting individual events
+- "Select All" / "Select None" buttons
+- Filter events by source
+- Copy selected events to clipboard (matching ExampleOutput.txt format)
+- Download selected events as .txt file
+- Clean URL: `/export` via Vercel rewrite
+
+**Total Tests:** 54 (51 passing, 3 pre-existing failures in date_parser)
 
 ---
 
@@ -425,11 +451,11 @@ Edit `config/sources.yaml` and set `enabled: true/false` for each source.
 |----------|-------|-------|
 | Python modules | 18 | Core application code |
 | Config files | 2 | YAML configuration |
-| Templates | 1 | Jinja2 HTML template |
+| Templates | 2 | Jinja2 HTML templates (events.html.j2, export.html.j2) |
 | Scripts | 2 | Shell + Python |
-| Tests | 3 | pytest unit tests |
+| Tests | 4 | pytest unit tests |
 | Documentation | 2 | plan.md, progress.md |
-| **Total files** | **28** | Excluding __init__.py |
+| **Total files** | **30** | Excluding __init__.py |
 
 ---
 
@@ -449,5 +475,11 @@ tests/test_event.py - 18 tests
   - Date range filtering
   - Sorting
 
-Total: 39 tests passing
+tests/test_html_generator.py - 15 tests
+  - Export page generation
+  - JSON data embedding
+  - UI element verification
+  - Text output formatting
+
+Total: 54 tests (51 passing, 3 pre-existing failures in date_parser timezone tests)
 ```

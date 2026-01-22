@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Events | Statistics Events Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1f2e;
+            --ink-light: #3d4663;
+            --ink-muted: #6b7394;
+            --paper: #fafbfd;
+            --paper-warm: #f5f3ef;
+            --card: #ffffff;
+            --accent: #e85d4c;
+            --accent-glow: rgba(232, 93, 76, 0.15);
+            --teal: #2d9596;
+            --teal-soft: rgba(45, 149, 150, 0.12);
+            --violet: #7c5cbf;
+            --violet-soft: rgba(124, 92, 191, 0.12);
+            --gold: #d4a847;
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --border: #e8eaf0;
+            --border-subtle: #f0f1f5;
+            --shadow-sm: 0 1px 3px rgba(26, 31, 46, 0.04), 0 1px 2px rgba(26, 31, 46, 0.06);
+            --shadow-md: 0 4px 12px rgba(26, 31, 46, 0.06), 0 2px 4px rgba(26, 31, 46, 0.04);
+            --shadow-lg: 0 12px 40px rgba(26, 31, 46, 0.1), 0 4px 12px rgba(26, 31, 46, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.65;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background:
+                linear-gradient(135deg, var(--paper) 0%, var(--paper-warm) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 80px,
+                    var(--border-subtle) 80px,
+                    var(--border-subtle) 81px
+                );
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 40px 24px 140px;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 32px;
+            animation: fadeSlideIn 0.6s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .header-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--ink-muted);
+        }
+
+        /* Controls bar */
+        .controls-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--paper);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .selection-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selection-controls button {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .selection-controls button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .selection-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--ink-muted);
+            padding: 6px 12px;
+            background: var(--paper-warm);
+            border-radius: var(--radius-sm);
+        }
+
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-controls label {
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+        }
+
+        .filter-controls select {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            cursor: pointer;
+        }
+
+        /* Event items */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            animation: fadeSlideIn 0.4s ease-out backwards;
+        }
+
+        {% for i in range(50) %}
+        .event-item:nth-child({{ i + 1 }}) {
+            animation-delay: {{ i * 0.03 }}s;
+        }
+        {% endfor %}
+
+        .event-item:hover {
+            border-color: var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .event-item.selected {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .event-item.hidden {
+            display: none;
+        }
+
+        /* Custom checkbox */
+        .event-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding-top: 2px;
+        }
+
+        .event-checkbox {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .event-checkbox:checked + .checkbox-custom {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .event-checkbox:checked + .checkbox-custom::after {
+            content: '\2713';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .event-checkbox:focus + .checkbox-custom {
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .event-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-top-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .event-source {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--teal);
+            background: var(--teal-soft);
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .event-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.4;
+        }
+
+        .event-speakers {
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .badge-free {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .badge-paid {
+            background: linear-gradient(135deg, var(--gold) 0%, #c99a38 100%);
+            color: white;
+        }
+
+        .badge-virtual {
+            background: var(--violet-soft);
+            color: var(--violet);
+        }
+
+        .badge-inperson {
+            background: var(--teal-soft);
+            color: var(--teal);
+        }
+
+        /* Export actions */
+        .export-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 20px rgba(26, 31, 46, 0.08);
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .btn-primary, .btn-secondary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #d24d3c 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:disabled,
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary.success {
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--ink);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--ink-light);
+        }
+
+        /* Empty state */
+        .no-events {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-events-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+
+        .no-events p {
+            color: var(--ink-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px 140px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .selection-controls {
+                flex-wrap: wrap;
+            }
+
+            .event-item {
+                padding: 16px;
+            }
+
+            .event-top-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .export-actions {
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="events.html" class="back-link">&larr; Back to Events</a>
+            <div class="header-eyebrow">Statistics & Data Science</div>
+            <h1>Export Events</h1>
+            <p class="header-subtitle">Select events to export as text for sharing</p>
+        </header>
+
+        <div class="controls-bar">
+            <div class="selection-controls">
+                <button type="button" id="select-all">Select All</button>
+                <button type="button" id="select-none">Select None</button>
+                <span class="selection-count" id="selection-count">0 selected</span>
+            </div>
+            <div class="filter-controls">
+                <label for="source-filter">Filter:</label>
+                <select id="source-filter">
+                    <option value="all">All Sources</option>
+                    {% for source in sources %}
+                    <option value="{{ source }}">{{ source }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <main class="events-list">
+            {% if events %}
+                {% for event in events %}
+                <div class="event-item" data-source="{{ event.source }}" data-index="{{ loop.index0 }}">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="{{ loop.index0 }}">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">{{ event.title }}</h3>
+                            <span class="event-source">{{ event.source }}</span>
+                        </div>
+                        {% if event.speakers %}
+                        <p class="event-speakers">{{ event.speakers | join(', ') }}</p>
+                        {% endif %}
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; {{ event.format_date_range() }}
+                            </span>
+                            <span class="badge {% if event.location_type.value == 'Virtual' %}badge-virtual{% else %}badge-inperson{% endif %}">
+                                {{ event.format_location() }}
+                            </span>
+                            <span class="badge {% if event.format_cost() == 'free' %}badge-free{% else %}badge-paid{% endif %}">
+                                {{ event.format_cost() }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-events">
+                    <div class="no-events-icon">&#128202;</div>
+                    <p>No events available to export.</p>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <div class="export-actions">
+        <button type="button" id="copy-clipboard" class="btn-primary" disabled>
+            Copy to Clipboard
+        </button>
+        <button type="button" id="download-txt" class="btn-secondary" disabled>
+            Download as .txt
+        </button>
+    </div>
+
+    <!-- Embed event data for JavaScript -->
+    <script type="application/json" id="events-data">
+    {{ events_json | safe }}
+    </script>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // Parse embedded event data
+        const eventsData = JSON.parse(
+            document.getElementById('events-data').textContent
+        );
+
+        // DOM references
+        const checkboxes = document.querySelectorAll('.event-checkbox');
+        const eventItems = document.querySelectorAll('.event-item');
+        const selectAllBtn = document.getElementById('select-all');
+        const selectNoneBtn = document.getElementById('select-none');
+        const sourceFilter = document.getElementById('source-filter');
+        const selectionCount = document.getElementById('selection-count');
+        const copyBtn = document.getElementById('copy-clipboard');
+        const downloadBtn = document.getElementById('download-txt');
+
+        // Get selected event indices
+        function getSelectedIndices() {
+            return Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => parseInt(cb.dataset.index));
+        }
+
+        // Update UI state
+        function updateUI() {
+            const selected = getSelectedIndices();
+            const count = selected.length;
+
+            selectionCount.textContent = count + ' selected';
+            copyBtn.disabled = count === 0;
+            downloadBtn.disabled = count === 0;
+
+            // Update visual selection state
+            eventItems.forEach(item => {
+                const index = parseInt(item.dataset.index);
+                const cb = item.querySelector('.event-checkbox');
+                if (cb.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Format a single event matching ExampleOutput.txt exactly
+        function formatEvent(event) {
+            // Format: SOURCE: Title (Speakers)
+            let speakersStr = '';
+            if (event.speakers && event.speakers.length > 0) {
+                speakersStr = ' (' + event.speakers.join(', ') + ')';
+            }
+
+            const lines = [
+                '\t\u2022\t' + event.source + ': ' + event.title + speakersStr,
+                event.url,
+                event.date_range + ', ' + event.location + ' (' + event.cost + ')'
+            ];
+
+            return lines.join('\n');
+        }
+
+        // Generate full export text
+        function generateExportText() {
+            const selected = getSelectedIndices();
+            const selectedEvents = selected.map(i => eventsData[i]);
+
+            const header = 'For your information, here are a few additional upcoming events that will be held in the next two weeks which could be of interest to you.';
+
+            const eventTexts = selectedEvents.map(formatEvent);
+
+            return header + '\n \n' + eventTexts.join('\n \n');
+        }
+
+        // Event handlers
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateUI);
+        });
+
+        // Click on event item toggles checkbox
+        eventItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't toggle if clicking on checkbox, label, or custom checkbox
+                // (the label handles its own toggle behavior)
+                if (e.target.classList.contains('event-checkbox') ||
+                    e.target.classList.contains('checkbox-custom') ||
+                    e.target.classList.contains('event-checkbox-label')) return;
+                const cb = item.querySelector('.event-checkbox');
+                cb.checked = !cb.checked;
+                updateUI();
+            });
+        });
+
+        selectAllBtn.addEventListener('click', function() {
+            const visibleItems = document.querySelectorAll('.event-item:not(.hidden)');
+            visibleItems.forEach(item => {
+                const cb = item.querySelector('.event-checkbox');
+                cb.checked = true;
+            });
+            updateUI();
+        });
+
+        selectNoneBtn.addEventListener('click', function() {
+            checkboxes.forEach(cb => cb.checked = false);
+            updateUI();
+        });
+
+        sourceFilter.addEventListener('change', function() {
+            const value = sourceFilter.value;
+            eventItems.forEach(item => {
+                if (value === 'all' || item.dataset.source === value) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        copyBtn.addEventListener('click', async function() {
+            const text = generateExportText();
+            try {
+                await navigator.clipboard.writeText(text);
+                // Visual feedback
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('success');
+                setTimeout(function() {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Copied to clipboard!');
+            }
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            const text = generateExportText();
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'events.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Initialize
+        updateUI();
+    })();
+    </script>
+</body>
+</html>

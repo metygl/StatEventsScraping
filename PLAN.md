@@ -124,6 +124,21 @@ StatEventsScraping/
 20. Vercel auto-deployment - serves `output/events.html` at root URL
 21. Vercel config (`vercel.json`) - URL rewrite for clean paths
 
+### Phase 9: Export Page ✅ (NEW)
+22. Export HTML template (`src/output/templates/export.html.j2`)
+    - Checkbox selection for individual events
+    - Select All / Select None buttons
+    - Source filter dropdown
+    - Sticky controls bar and export footer
+23. HTMLGenerator `generate_export_page()` method
+    - JSON serialization for client-side JavaScript
+    - Pre-formatted fields matching ExampleOutput.txt format
+24. Copy to Clipboard functionality (navigator.clipboard API)
+25. Download as .txt functionality (Blob + createObjectURL)
+26. Navigation between events.html and export.html
+27. Vercel `/export` route for clean URL
+28. Unit tests for export functionality (15 tests)
+
 ## Key Technical Decisions
 
 | Aspect | Decision |
