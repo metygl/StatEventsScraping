@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Events | Statistics Events Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1f2e;
+            --ink-light: #3d4663;
+            --ink-muted: #6b7394;
+            --paper: #fafbfd;
+            --paper-warm: #f5f3ef;
+            --card: #ffffff;
+            --accent: #e85d4c;
+            --accent-glow: rgba(232, 93, 76, 0.15);
+            --teal: #2d9596;
+            --teal-soft: rgba(45, 149, 150, 0.12);
+            --violet: #7c5cbf;
+            --violet-soft: rgba(124, 92, 191, 0.12);
+            --gold: #d4a847;
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --border: #e8eaf0;
+            --border-subtle: #f0f1f5;
+            --shadow-sm: 0 1px 3px rgba(26, 31, 46, 0.04), 0 1px 2px rgba(26, 31, 46, 0.06);
+            --shadow-md: 0 4px 12px rgba(26, 31, 46, 0.06), 0 2px 4px rgba(26, 31, 46, 0.04);
+            --shadow-lg: 0 12px 40px rgba(26, 31, 46, 0.1), 0 4px 12px rgba(26, 31, 46, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.65;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background:
+                linear-gradient(135deg, var(--paper) 0%, var(--paper-warm) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 80px,
+                    var(--border-subtle) 80px,
+                    var(--border-subtle) 81px
+                );
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 40px 24px 140px;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 32px;
+            animation: fadeSlideIn 0.6s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .header-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--ink-muted);
+        }
+
+        /* Controls bar */
+        .controls-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--paper);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .selection-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selection-controls button {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .selection-controls button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .selection-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--ink-muted);
+            padding: 6px 12px;
+            background: var(--paper-warm);
+            border-radius: var(--radius-sm);
+        }
+
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-controls label {
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+        }
+
+        .filter-controls select {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            cursor: pointer;
+        }
+
+        /* Event items */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            animation: fadeSlideIn 0.4s ease-out backwards;
+        }
+
+        
+        .event-item:nth-child(1) {
+            animation-delay: 0.0s;
+        }
+        
+        .event-item:nth-child(2) {
+            animation-delay: 0.03s;
+        }
+        
+        .event-item:nth-child(3) {
+            animation-delay: 0.06s;
+        }
+        
+        .event-item:nth-child(4) {
+            animation-delay: 0.09s;
+        }
+        
+        .event-item:nth-child(5) {
+            animation-delay: 0.12s;
+        }
+        
+        .event-item:nth-child(6) {
+            animation-delay: 0.15s;
+        }
+        
+        .event-item:nth-child(7) {
+            animation-delay: 0.18s;
+        }
+        
+        .event-item:nth-child(8) {
+            animation-delay: 0.21s;
+        }
+        
+        .event-item:nth-child(9) {
+            animation-delay: 0.24s;
+        }
+        
+        .event-item:nth-child(10) {
+            animation-delay: 0.27s;
+        }
+        
+        .event-item:nth-child(11) {
+            animation-delay: 0.3s;
+        }
+        
+        .event-item:nth-child(12) {
+            animation-delay: 0.32999999999999996s;
+        }
+        
+        .event-item:nth-child(13) {
+            animation-delay: 0.36s;
+        }
+        
+        .event-item:nth-child(14) {
+            animation-delay: 0.39s;
+        }
+        
+        .event-item:nth-child(15) {
+            animation-delay: 0.42s;
+        }
+        
+        .event-item:nth-child(16) {
+            animation-delay: 0.44999999999999996s;
+        }
+        
+        .event-item:nth-child(17) {
+            animation-delay: 0.48s;
+        }
+        
+        .event-item:nth-child(18) {
+            animation-delay: 0.51s;
+        }
+        
+        .event-item:nth-child(19) {
+            animation-delay: 0.54s;
+        }
+        
+        .event-item:nth-child(20) {
+            animation-delay: 0.57s;
+        }
+        
+        .event-item:nth-child(21) {
+            animation-delay: 0.6s;
+        }
+        
+        .event-item:nth-child(22) {
+            animation-delay: 0.63s;
+        }
+        
+        .event-item:nth-child(23) {
+            animation-delay: 0.6599999999999999s;
+        }
+        
+        .event-item:nth-child(24) {
+            animation-delay: 0.69s;
+        }
+        
+        .event-item:nth-child(25) {
+            animation-delay: 0.72s;
+        }
+        
+        .event-item:nth-child(26) {
+            animation-delay: 0.75s;
+        }
+        
+        .event-item:nth-child(27) {
+            animation-delay: 0.78s;
+        }
+        
+        .event-item:nth-child(28) {
+            animation-delay: 0.8099999999999999s;
+        }
+        
+        .event-item:nth-child(29) {
+            animation-delay: 0.84s;
+        }
+        
+        .event-item:nth-child(30) {
+            animation-delay: 0.87s;
+        }
+        
+        .event-item:nth-child(31) {
+            animation-delay: 0.8999999999999999s;
+        }
+        
+        .event-item:nth-child(32) {
+            animation-delay: 0.9299999999999999s;
+        }
+        
+        .event-item:nth-child(33) {
+            animation-delay: 0.96s;
+        }
+        
+        .event-item:nth-child(34) {
+            animation-delay: 0.99s;
+        }
+        
+        .event-item:nth-child(35) {
+            animation-delay: 1.02s;
+        }
+        
+        .event-item:nth-child(36) {
+            animation-delay: 1.05s;
+        }
+        
+        .event-item:nth-child(37) {
+            animation-delay: 1.08s;
+        }
+        
+        .event-item:nth-child(38) {
+            animation-delay: 1.1099999999999999s;
+        }
+        
+        .event-item:nth-child(39) {
+            animation-delay: 1.14s;
+        }
+        
+        .event-item:nth-child(40) {
+            animation-delay: 1.17s;
+        }
+        
+        .event-item:nth-child(41) {
+            animation-delay: 1.2s;
+        }
+        
+        .event-item:nth-child(42) {
+            animation-delay: 1.23s;
+        }
+        
+        .event-item:nth-child(43) {
+            animation-delay: 1.26s;
+        }
+        
+        .event-item:nth-child(44) {
+            animation-delay: 1.29s;
+        }
+        
+        .event-item:nth-child(45) {
+            animation-delay: 1.3199999999999998s;
+        }
+        
+        .event-item:nth-child(46) {
+            animation-delay: 1.3499999999999999s;
+        }
+        
+        .event-item:nth-child(47) {
+            animation-delay: 1.38s;
+        }
+        
+        .event-item:nth-child(48) {
+            animation-delay: 1.41s;
+        }
+        
+        .event-item:nth-child(49) {
+            animation-delay: 1.44s;
+        }
+        
+        .event-item:nth-child(50) {
+            animation-delay: 1.47s;
+        }
+        
+
+        .event-item:hover {
+            border-color: var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .event-item.selected {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .event-item.hidden {
+            display: none;
+        }
+
+        /* Custom checkbox */
+        .event-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding-top: 2px;
+        }
+
+        .event-checkbox {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .event-checkbox:checked + .checkbox-custom {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .event-checkbox:checked + .checkbox-custom::after {
+            content: '\2713';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .event-checkbox:focus + .checkbox-custom {
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .event-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-top-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .event-source {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--teal);
+            background: var(--teal-soft);
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .event-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.4;
+        }
+
+        .event-speakers {
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .badge-free {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .badge-paid {
+            background: linear-gradient(135deg, var(--gold) 0%, #c99a38 100%);
+            color: white;
+        }
+
+        .badge-virtual {
+            background: var(--violet-soft);
+            color: var(--violet);
+        }
+
+        .badge-inperson {
+            background: var(--teal-soft);
+            color: var(--teal);
+        }
+
+        /* Export actions */
+        .export-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 20px rgba(26, 31, 46, 0.08);
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .btn-primary, .btn-secondary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #d24d3c 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:disabled,
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary.success {
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--ink);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--ink-light);
+        }
+
+        /* Empty state */
+        .no-events {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-events-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+
+        .no-events p {
+            color: var(--ink-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px 140px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .selection-controls {
+                flex-wrap: wrap;
+            }
+
+            .event-item {
+                padding: 16px;
+            }
+
+            .event-top-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .export-actions {
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="events.html" class="back-link">&larr; Back to Events</a>
+            <div class="header-eyebrow">Statistics & Data Science</div>
+            <h1>Export Events</h1>
+            <p class="header-subtitle">Select events to export as text for sharing</p>
+        </header>
+
+        <div class="controls-bar">
+            <div class="selection-controls">
+                <button type="button" id="select-all">Select All</button>
+                <button type="button" id="select-none">Select None</button>
+                <span class="selection-count" id="selection-count">0 selected</span>
+            </div>
+            <div class="filter-controls">
+                <label for="source-filter">Filter:</label>
+                <select id="source-filter">
+                    <option value="all">All Sources</option>
+                    
+                    <option value="FDA Advisory Committee Meeting">FDA Advisory Committee Meeting</option>
+                    
+                    <option value="FDA Grand Rounds">FDA Grand Rounds</option>
+                    
+                    <option value="FDA Webcast">FDA Webcast</option>
+                    
+                    <option value="Harvard Department of Epidemiology Webinar">Harvard Department of Epidemiology Webinar</option>
+                    
+                    <option value="Instats Seminar">Instats Seminar</option>
+                    
+                    <option value="NISS">NISS</option>
+                    
+                    <option value="PSI">PSI</option>
+                    
+                    <option value="Posit">Posit</option>
+                    
+                </select>
+            </div>
+        </div>
+
+        <main class="events-list">
+            
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="0">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="0">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Interpreting Relative Effects</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <p class="event-speakers">Ken Gerow</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 21, 2026, 8:00-1:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                $450
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="FDA Advisory Committee Meeting" data-index="1">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="1">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">January 22, 2026: Tobacco Products Scientific Advisory Committee Meeting</h3>
+                            <span class="event-source">FDA Advisory Committee Meeting</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 22, 2026, 6:00-1:30pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="FDA Grand Rounds" data-index="2">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="2">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">FDA Grand Rounds – Antibody Glycosylation Insights for High-Quality Biotherapeutics</h3>
+                            <span class="event-source">FDA Grand Rounds</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 22, 2026, 9:00-10:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Posit" data-index="3">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="3">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Allissa Dillman</h3>
+                            <span class="event-source">Posit</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 22, 2026, 12:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="4">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="4">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Egocentric Social Network Analysis</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <p class="event-speakers">Bryce Hughes</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 23, 2026, 10:00-3:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                paid
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="NISS" data-index="5">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="5">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">COPSS-NISS Leadership Webinar: The Role of Bayesian Statistics in an Age of AI</h3>
+                            <span class="event-source">NISS</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 27, 2026, 5:00-6:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="FDA Webcast" data-index="6">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="6">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Labeling for Transparency and Trust in AI/ML-enabled Cardiac Devices and Software: Patient and Clinician Needs</h3>
+                            <span class="event-source">FDA Webcast</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 27, 2026, 12:00-1:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="7">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="7">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Researching Crowdfunding</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <p class="event-speakers">Douglas Cumming</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 27, 2026, 1:00-3:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                $537
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Posit" data-index="8">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="8">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Gen-AI Assisted Migration</h3>
+                            <span class="event-source">Posit</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 27, 2026, 3:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="FDA Webcast" data-index="9">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="9">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Eco-NAMs Webinar Series | Gill Cell-Line Assay for Acute Fish Toxicity Prediction</h3>
+                            <span class="event-source">FDA Webcast</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 28, 2026, 5:00-6:30am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="10">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="10">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">LLMs for Qualitative Network Analysis</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <p class="event-speakers">Moses Boudourides</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 28, 2026, 8:00-11:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                $308
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Harvard Department of Epidemiology Webinar" data-index="11">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="11">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Developments in Postmarketing Safety Surveillance of Medical Products: Reflections from the FDA Sentinel Innovation Center</h3>
+                            <span class="event-source">Harvard Department of Epidemiology Webinar</span>
+                        </div>
+                        
+                        <p class="event-speakers">Dr. Rishi Desai</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 28, 2026, 10:00-10:50am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Posit" data-index="12">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="12">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">AI-Powered Data Engineering Workflows: Positron for Databricks Users</h3>
+                            <span class="event-source">Posit</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 28, 2026, 11:00am PST
+                            </span>
+                            <span class="badge badge-inperson">
+                                TBD
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Posit" data-index="13">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="13">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Harness AI Adoption</h3>
+                            <span class="event-source">Posit</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 28, 2026, 4:00pm PST
+                            </span>
+                            <span class="badge badge-inperson">
+                                In-Person
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="NISS" data-index="14">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="14">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">NISS/FCSM Empowering Generative AI with Trusted Federal Data: Strategies for Quality &amp; Usability</h3>
+                            <span class="event-source">NISS</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; January 30, 2026, 9:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="15">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="15">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">South Asian Nationalisms</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <p class="event-speakers">International Association</p>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; February 02, 2026, 6:00-7:30am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                paid
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="16">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="16">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Qualitative Data Collection Techniques</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; February 02, 2026, 6:00-8:30am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                $163
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="Instats Seminar" data-index="17">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="17">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Multilevel Models in R with ChatGPT</h3>
+                            <span class="event-source">Instats Seminar</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; February 02, 2026, 9:00-12:00pm PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-paid">
+                                $494
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="PSI" data-index="18">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="18">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">PSI Book Club Lunch and Learn: Communicating with Clarity and Confidence</h3>
+                            <span class="event-source">PSI</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; February 03, 2026, 4:00-5:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="event-item" data-source="PSI" data-index="19">
+                    <label class="event-checkbox-label">
+                        <input type="checkbox" class="event-checkbox" data-index="19">
+                        <span class="checkbox-custom"></span>
+                    </label>
+                    <div class="event-content">
+                        <div class="event-top-row">
+                            <h3 class="event-title">Pre-Clinical SIG Webinar: Multi-Group Comparison of Means for Single-Factor Experiment with Small Sample Size Under Normality and Heteroscedasticity</h3>
+                            <span class="event-source">PSI</span>
+                        </div>
+                        
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                &#9201; February 03, 2026, 6:00-7:00am PST
+                            </span>
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+            
+        </main>
+    </div>
+
+    <div class="export-actions">
+        <button type="button" id="copy-clipboard" class="btn-primary" disabled>
+            Copy to Clipboard
+        </button>
+        <button type="button" id="download-txt" class="btn-secondary" disabled>
+            Download as .txt
+        </button>
+    </div>
+
+    <!-- Embed event data for JavaScript -->
+    <script type="application/json" id="events-data">
+    [{"title": "Interpreting Relative Effects", "url": "https://instats.org/seminar/interpreting-relative-effects", "source": "Instats Seminar", "speakers": ["Ken Gerow"], "date_range": "January 21, 2026, 8:00-1:00pm PST", "location": "Virtual", "cost": "$450"}, {"title": "January 22, 2026: Tobacco Products Scientific Advisory Committee Meeting", "url": "https://www.fda.gov/advisory-committees/advisory-committee-calendar/january-22-2026-tobacco-products-scientific-advisory-committee-meeting-01222026", "source": "FDA Advisory Committee Meeting", "speakers": [], "date_range": "January 22, 2026, 6:00-1:30pm PST", "location": "Virtual", "cost": "free"}, {"title": "FDA Grand Rounds – Antibody Glycosylation Insights for High-Quality Biotherapeutics", "url": "https://www.fda.gov/science-research/fda-grand-rounds/fda-grand-rounds-antibody-glycosylation-insights-high-quality-biotherapeutics-01222026", "source": "FDA Grand Rounds", "speakers": [], "date_range": "January 22, 2026, 9:00-10:00am PST", "location": "Virtual", "cost": "free"}, {"title": "Allissa Dillman", "url": "https://posit.co/data-science-hangout/allissa-dillman/", "source": "Posit", "speakers": [], "date_range": "January 22, 2026, 12:00pm PST", "location": "Virtual", "cost": "free"}, {"title": "Egocentric Social Network Analysis", "url": "https://instats.org/seminar/egocentric-social-network-analysis", "source": "Instats Seminar", "speakers": ["Bryce Hughes"], "date_range": "January 23, 2026, 10:00-3:00pm PST", "location": "Virtual", "cost": "paid"}, {"title": "COPSS-NISS Leadership Webinar: The Role of Bayesian Statistics in an Age of AI", "url": "https://www.niss.org/events/copss-niss-leadership-webinar-role-bayesian-statistics-age-ai", "source": "NISS", "speakers": [], "date_range": "January 27, 2026, 5:00-6:00am PST", "location": "Virtual", "cost": "free"}, {"title": "Labeling for Transparency and Trust in AI/ML-enabled Cardiac Devices and Software: Patient and Clinician Needs", "url": "https://www.fda.gov/science-research/advancing-regulatory-science/labeling-transparency-and-trust-aiml-enabled-cardiac-devices-and-software-patient-and-clinician", "source": "FDA Webcast", "speakers": [], "date_range": "January 27, 2026, 12:00-1:00pm PST", "location": "Virtual", "cost": "free"}, {"title": "Researching Crowdfunding", "url": "https://instats.org/seminar/researching-crowdfunding", "source": "Instats Seminar", "speakers": ["Douglas Cumming"], "date_range": "January 27, 2026, 1:00-3:00pm PST", "location": "Virtual", "cost": "$537"}, {"title": "Gen-AI Assisted Migration", "url": "https://posit.co/events/gen-ai-assisted-migration-webinar/", "source": "Posit", "speakers": [], "date_range": "January 27, 2026, 3:00pm PST", "location": "Virtual", "cost": "free"}, {"title": "Eco-NAMs Webinar Series | Gill Cell-Line Assay for Acute Fish Toxicity Prediction", "url": "https://www.fda.gov/news-events/fda-meetings-conferences-and-workshops/eco-nams-webinar-series-gill-cell-line-assay-acute-fish-toxicity-prediction-01282026", "source": "FDA Webcast", "speakers": [], "date_range": "January 28, 2026, 5:00-6:30am PST", "location": "Virtual", "cost": "free"}, {"title": "LLMs for Qualitative Network Analysis", "url": "https://instats.org/seminar/llms-for-qualitative-network-analysis", "source": "Instats Seminar", "speakers": ["Moses Boudourides"], "date_range": "January 28, 2026, 8:00-11:00am PST", "location": "Virtual", "cost": "$308"}, {"title": "Developments in Postmarketing Safety Surveillance of Medical Products: Reflections from the FDA Sentinel Innovation Center", "url": "https://hsph.harvard.edu/epidemiology/events/developments-in-postmarketing-safety-surveillance-of-medical-products-reflections-from-the-fda-sentinel-innovation-center/", "source": "Harvard Department of Epidemiology Webinar", "speakers": ["Dr. Rishi Desai"], "date_range": "January 28, 2026, 10:00-10:50am PST", "location": "Virtual", "cost": "free"}, {"title": "AI-Powered Data Engineering Workflows: Positron for Databricks Users", "url": "https://posit.co/workflow-demo/ai-powered-data-engineering-workflows-positron-for-databricks-users/", "source": "Posit", "speakers": [], "date_range": "January 28, 2026, 11:00am PST", "location": "TBD", "cost": "free"}, {"title": "Harness AI Adoption", "url": "https://posit.co/events/harness-ai-adoption/", "source": "Posit", "speakers": [], "date_range": "January 28, 2026, 4:00pm PST", "location": "In-Person", "cost": "free"}, {"title": "NISS/FCSM Empowering Generative AI with Trusted Federal Data: Strategies for Quality & Usability", "url": "https://www.niss.org/events/nissfcsm-empowering-generative-ai-trusted-federal-data-strategies-quality-usability", "source": "NISS", "speakers": [], "date_range": "January 30, 2026, 9:00am PST", "location": "Virtual", "cost": "free"}, {"title": "South Asian Nationalisms", "url": "https://instats.org/seminar/south-asian-nationalisms", "source": "Instats Seminar", "speakers": ["International Association"], "date_range": "February 02, 2026, 6:00-7:30am PST", "location": "Virtual", "cost": "paid"}, {"title": "Qualitative Data Collection Techniques", "url": "https://instats.org/seminar/qualitative-data-collection-techniques", "source": "Instats Seminar", "speakers": [], "date_range": "February 02, 2026, 6:00-8:30am PST", "location": "Virtual", "cost": "$163"}, {"title": "Multilevel Models in R with ChatGPT", "url": "https://instats.org/seminar/multilevel-models-in-r-with-chatgpt", "source": "Instats Seminar", "speakers": [], "date_range": "February 02, 2026, 9:00-12:00pm PST", "location": "Virtual", "cost": "$494"}, {"title": "PSI Book Club Lunch and Learn: Communicating with Clarity and Confidence", "url": "https://www.psiweb.org/events/event-item/2026/02/03/default-calendar/psi-book-club-lunch-and-learn-communicating-with-clarity-and-confidence", "source": "PSI", "speakers": [], "date_range": "February 03, 2026, 4:00-5:00am PST", "location": "Virtual", "cost": "free"}, {"title": "Pre-Clinical SIG Webinar: Multi-Group Comparison of Means for Single-Factor Experiment with Small Sample Size Under Normality and Heteroscedasticity", "url": "https://www.psiweb.org/events/event-item/2026/02/03/default-calendar/pre-clinical-sig-webinar-multi-group-comparison-of-means-for-single-factor-experiment-with-small-sample-size-under-normality-and-heteroscedasticity", "source": "PSI", "speakers": [], "date_range": "February 03, 2026, 6:00-7:00am PST", "location": "Virtual", "cost": "free"}]
+    </script>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // Parse embedded event data
+        const eventsData = JSON.parse(
+            document.getElementById('events-data').textContent
+        );
+
+        // DOM references
+        const checkboxes = document.querySelectorAll('.event-checkbox');
+        const eventItems = document.querySelectorAll('.event-item');
+        const selectAllBtn = document.getElementById('select-all');
+        const selectNoneBtn = document.getElementById('select-none');
+        const sourceFilter = document.getElementById('source-filter');
+        const selectionCount = document.getElementById('selection-count');
+        const copyBtn = document.getElementById('copy-clipboard');
+        const downloadBtn = document.getElementById('download-txt');
+
+        // Get selected event indices
+        function getSelectedIndices() {
+            return Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => parseInt(cb.dataset.index));
+        }
+
+        // Update UI state
+        function updateUI() {
+            const selected = getSelectedIndices();
+            const count = selected.length;
+
+            selectionCount.textContent = count + ' selected';
+            copyBtn.disabled = count === 0;
+            downloadBtn.disabled = count === 0;
+
+            // Update visual selection state
+            eventItems.forEach(item => {
+                const index = parseInt(item.dataset.index);
+                const cb = item.querySelector('.event-checkbox');
+                if (cb.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Format a single event matching ExampleOutput.txt exactly
+        function formatEvent(event) {
+            // Format: SOURCE: Title (Speakers)
+            let speakersStr = '';
+            if (event.speakers && event.speakers.length > 0) {
+                speakersStr = ' (' + event.speakers.join(', ') + ')';
+            }
+
+            const lines = [
+                '\t\u2022\t' + event.source + ': ' + event.title + speakersStr,
+                event.url,
+                event.date_range + ', ' + event.location + ' (' + event.cost + ')'
+            ];
+
+            return lines.join('\n');
+        }
+
+        // Generate full export text
+        function generateExportText() {
+            const selected = getSelectedIndices();
+            const selectedEvents = selected.map(i => eventsData[i]);
+
+            const header = 'For your information, here are a few additional upcoming events that will be held in the next two weeks which could be of interest to you.';
+
+            const eventTexts = selectedEvents.map(formatEvent);
+
+            return header + '\n \n' + eventTexts.join('\n \n');
+        }
+
+        // Event handlers
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateUI);
+        });
+
+        // Click on event item toggles checkbox
+        eventItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't toggle if clicking on checkbox, label, or custom checkbox
+                // (the label handles its own toggle behavior)
+                if (e.target.classList.contains('event-checkbox') ||
+                    e.target.classList.contains('checkbox-custom') ||
+                    e.target.classList.contains('event-checkbox-label')) return;
+                const cb = item.querySelector('.event-checkbox');
+                cb.checked = !cb.checked;
+                updateUI();
+            });
+        });
+
+        selectAllBtn.addEventListener('click', function() {
+            const visibleItems = document.querySelectorAll('.event-item:not(.hidden)');
+            visibleItems.forEach(item => {
+                const cb = item.querySelector('.event-checkbox');
+                cb.checked = true;
+            });
+            updateUI();
+        });
+
+        selectNoneBtn.addEventListener('click', function() {
+            checkboxes.forEach(cb => cb.checked = false);
+            updateUI();
+        });
+
+        sourceFilter.addEventListener('change', function() {
+            const value = sourceFilter.value;
+            eventItems.forEach(item => {
+                if (value === 'all' || item.dataset.source === value) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        copyBtn.addEventListener('click', async function() {
+            const text = generateExportText();
+            try {
+                await navigator.clipboard.writeText(text);
+                // Visual feedback
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('success');
+                setTimeout(function() {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Copied to clipboard!');
+            }
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            const text = generateExportText();
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'events.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Initialize
+        updateUI();
+    })();
+    </script>
+</body>
+</html>
