@@ -2,11 +2,18 @@
 
 ## Current Status: Deployed to Vercel
 
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-01-22
 
 ---
 
-## Recent Update: Export Page Feature
+## Recent Update: Extended Date Range
+
+- Changed event date range from 2 weeks (14 days) to 3 weeks (21 days) in `config/settings.yaml`
+- This allows users to see more upcoming events in the output
+
+---
+
+## Previous Update: Export Page Feature
 
 ### Phase 9: Export Page ✅ (NEW)
 
@@ -435,7 +442,7 @@ Edit `config/settings.yaml`:
 ```yaml
 date_range:
   mode: "rolling"    # or "fixed"
-  days_ahead: 14     # for rolling mode
+  days_ahead: 21     # for rolling mode (3 weeks)
   # start_date: "2026-01-14"  # for fixed mode
   # end_date: "2026-01-30"
 ```
