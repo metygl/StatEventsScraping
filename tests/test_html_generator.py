@@ -9,7 +9,7 @@ from pathlib import Path
 from datetime import datetime
 import pytz
 
-from src.output.html_generator import HTMLGenerator
+from src.output.html_generator import HTMLGenerator, days_to_time_period
 from src.models.event import Event, LocationType
 
 
@@ -301,3 +301,84 @@ class TestGenerateTextOutput:
         workshop_pos = result.find("Data Science Workshop")
 
         assert bio_pos < seminar_pos < workshop_pos
+
+    def test_text_output_dynamic_time_period(
+        self, html_generator, sample_events, date_range
+    ):
+        """Test that text output uses dynamic time period based on days_ahead."""
+        # Test with 21 days (three weeks)
+        result = html_generator.generate_text_output(
+            sample_events, date_range, days_ahead=21
+        )
+        assert "three weeks" in result
+
+        # Test with 14 days (two weeks)
+        result = html_generator.generate_text_output(
+            sample_events, date_range, days_ahead=14
+        )
+        assert "two weeks" in result
+
+        # Test with 7 days (one week)
+        result = html_generator.generate_text_output(
+            sample_events, date_range, days_ahead=7
+        )
+        assert "one week" in result
+
+
+class TestDaysToTimePeriod:
+    """Tests for days_to_time_period helper function."""
+
+    def test_exact_weeks(self):
+        """Test conversion for exact week multiples."""
+        assert days_to_time_period(7) == "one week"
+        assert days_to_time_period(14) == "two weeks"
+        assert days_to_time_period(21) == "three weeks"
+        assert days_to_time_period(28) == "four weeks"
+        assert days_to_time_period(35) == "five weeks"
+        assert days_to_time_period(42) == "six weeks"
+
+    def test_non_week_multiples(self):
+        """Test conversion for non-week multiples returns days."""
+        assert days_to_time_period(10) == "10 days"
+        assert days_to_time_period(15) == "15 days"
+        assert days_to_time_period(20) == "20 days"
+
+    def test_single_day(self):
+        """Test conversion for single day."""
+        assert days_to_time_period(1) == "one day"
+
+    def test_few_days(self):
+        """Test conversion for a few days."""
+        assert days_to_time_period(3) == "3 days"
+        assert days_to_time_period(5) == "5 days"
+
+
+class TestExportPageTimePeriod:
+    """Tests for dynamic time period in export page."""
+
+    def test_export_page_uses_dynamic_time_period(
+        self, html_generator, sample_events, date_range
+    ):
+        """Test that export page contains the correct dynamic time period."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "export.html"
+
+            # Test with 21 days (three weeks)
+            html_generator.generate_export_page(
+                sample_events, str(output_path), date_range, days_ahead=21
+            )
+            content = output_path.read_text()
+            assert "three weeks" in content
+
+    def test_export_page_two_weeks(
+        self, html_generator, sample_events, date_range
+    ):
+        """Test export page with two weeks period."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "export.html"
+
+            html_generator.generate_export_page(
+                sample_events, str(output_path), date_range, days_ahead=14
+            )
+            content = output_path.read_text()
+            assert "two weeks" in content

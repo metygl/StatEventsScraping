@@ -12,6 +12,39 @@ from jinja2 import Environment, FileSystemLoader
 from src.models.event import Event
 
 
+def days_to_time_period(days: int) -> str:
+    """
+    Convert number of days to human-readable time period.
+
+    Args:
+        days: Number of days
+
+    Returns:
+        Human-readable string like "two weeks" or "three weeks"
+    """
+    weeks = days // 7
+    remaining_days = days % 7
+
+    week_words = {
+        1: "one week",
+        2: "two weeks",
+        3: "three weeks",
+        4: "four weeks",
+        5: "five weeks",
+        6: "six weeks",
+    }
+
+    if remaining_days == 0 and weeks in week_words:
+        return week_words[weeks]
+    elif weeks == 0:
+        if days == 1:
+            return "one day"
+        return f"{days} days"
+    else:
+        # For non-exact weeks, just say "X days"
+        return f"{days} days"
+
+
 class HTMLGenerator:
     """Generate static HTML and text output from events."""
 
@@ -83,6 +116,7 @@ class HTMLGenerator:
         self,
         events: List[Event],
         date_range: tuple = None,
+        days_ahead: int = 14,
     ) -> str:
         """
         Generate plain text output matching the example format.
@@ -90,6 +124,7 @@ class HTMLGenerator:
         Args:
             events: List of Event objects
             date_range: Optional tuple of (start_date, end_date)
+            days_ahead: Number of days in the lookahead period
 
         Returns:
             Formatted text string
@@ -102,9 +137,10 @@ class HTMLGenerator:
         if date_range:
             start_str = date_range[0].strftime("%-m/%-d")
             end_str = date_range[1].strftime("%-m/%-d")
+            time_period = days_to_time_period(days_ahead)
             lines.append(
                 f"For your information, here are a few additional upcoming events "
-                f"that will be held in the next two weeks ({start_str}-{end_str}) "
+                f"that will be held in the next {time_period} ({start_str}-{end_str}) "
                 f"which could be of interest to you."
             )
             lines.append("")
@@ -121,6 +157,7 @@ class HTMLGenerator:
         events: List[Event],
         output_path: str,
         date_range: tuple = None,
+        days_ahead: int = 14,
     ) -> str:
         """
         Generate export HTML page with event selection and export functionality.
@@ -129,6 +166,7 @@ class HTMLGenerator:
             events: List of Event objects
             output_path: Path to write HTML file
             date_range: Optional tuple of (start_date, end_date) for header
+            days_ahead: Number of days in the lookahead period
 
         Returns:
             Path to generated file
@@ -158,6 +196,7 @@ class HTMLGenerator:
 
         # Prepare template context
         pst = pytz.timezone("America/Los_Angeles")
+        time_period = days_to_time_period(days_ahead)
         context = {
             "events": sorted_events,
             "events_json": events_json,
@@ -170,6 +209,7 @@ class HTMLGenerator:
             "date_range_end": (
                 date_range[1].strftime("%B %d, %Y") if date_range else None
             ),
+            "time_period": time_period,
         }
 
         # Render template

@@ -653,7 +653,7 @@
             const selected = getSelectedIndices();
             const selectedEvents = selected.map(i => eventsData[i]);
 
-            const header = 'For your information, here are a few additional upcoming events that will be held in the next two weeks which could be of interest to you.';
+            const header = 'For your information, here are a few additional upcoming events that will be held in the next {{ time_period }} which could be of interest to you.';
 
             const eventTexts = selectedEvents.map(formatEvent);
 

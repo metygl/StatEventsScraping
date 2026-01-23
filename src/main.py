@@ -124,7 +124,8 @@ class EventScraperApp:
             )
 
             # Generate output
-            self._generate_output(filtered_events, date_range)
+            days_ahead = self.config["date_range"].get("days_ahead", 14)
+            self._generate_output(filtered_events, date_range, days_ahead)
 
             return filtered_events
 
@@ -163,7 +164,9 @@ class EventScraperApp:
                 logger.error(f"Error scraping {source['name']}: {e}")
                 raise
 
-    def _generate_output(self, events: List[Event], date_range: tuple):
+    def _generate_output(
+        self, events: List[Event], date_range: tuple, days_ahead: int = 14
+    ):
         """Generate all output files."""
         output_config = self.config["output"]
         output_dir = Path(output_config["directory"])
@@ -178,13 +181,13 @@ class EventScraperApp:
 
         # Generate export page
         export_path = output_dir / "export.html"
-        generator.generate_export_page(events, str(export_path), date_range)
+        generator.generate_export_page(events, str(export_path), date_range, days_ahead)
         logger.info(f"Generated export page: {export_path}")
 
         # Generate text if configured
         if output_config.get("generate_text", False):
             text_path = output_dir / output_config["text_file"]
-            text_content = generator.generate_text_output(events, date_range)
+            text_content = generator.generate_text_output(events, date_range, days_ahead)
             text_path.write_text(text_content, encoding="utf-8")
             logger.info(f"Generated text: {text_path}")
 
