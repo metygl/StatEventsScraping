@@ -47,6 +47,8 @@ SCRAPER_REGISTRY = {
     "associations.washington_stat": "src.scrapers.associations.washington_stat.WashingtonStatScraper",
     "organizations.ispor": "src.scrapers.organizations.ispor.ISPORScraper",
     "organizations.basel_biometric": "src.scrapers.organizations.basel_biometric.BaselBiometricScraper",
+    "organizations.statsupai": "src.scrapers.organizations.statsupai.StatsUpAIScraper",
+    "organizations.realised": "src.scrapers.organizations.realised.RealisedScraper",
     "tech.r_conferences": "src.scrapers.tech.r_conferences.RConferencesScraper",
 }
 

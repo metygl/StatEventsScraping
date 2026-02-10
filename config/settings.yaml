@@ -7,8 +7,8 @@ date_range:
   # For rolling mode: number of days to look ahead
   days_ahead: 21
   # For fixed mode: explicit start/end dates (uncomment to use)
-  # start_date: "2026-01-14"
-  # end_date: "2026-01-30"
+  # start_date: "2026-02-03"
+  # end_date: "2026-02-22"
 
 # Output settings
 output:

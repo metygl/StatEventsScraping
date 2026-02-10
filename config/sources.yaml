@@ -55,12 +55,12 @@ sources:
   - name: "McGill Biostatistics"
     url: "https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics"
     scraper: "academic.mcgill"
-    enabled: false
+    enabled: false  # Imperva bot protection blocks headless browsers
 
   - name: "UCSF Epidemiology"
     url: "https://epibiostat.ucsf.edu/events"
     scraper: "academic.ucsf"
-    enabled: false
+    enabled: true
 
   - name: "Duke-Margolis"
     url: "https://healthpolicy.duke.edu/events"
@@ -73,9 +73,9 @@ sources:
     enabled: false
 
   - name: "GMU Statistics"
-    url: "https://statistics.gmu.edu/connections/statistics-seminars"
+    url: "https://statistics.gmu.edu/about/events"
     scraper: "academic.gmu"
-    enabled: false
+    enabled: false  # Trumba JS calendar widget doesn't render in headless mode
 
   - name: "Dana Farber"
     url: "https://ds.dfci.harvard.edu/events/"
@@ -109,9 +109,9 @@ sources:
     enabled: false
 
   - name: "ASA Philadelphia"
-    url: "https://community.amstat.org/philadelphia/home"
+    url: "https://community.amstat.org/philadelphia/webinar"
     scraper: "associations.asa_philadelphia"
-    enabled: false
+    enabled: true
 
   - name: "ICSA"
     url: "https://www.icsa.org/category/events/"
@@ -141,7 +141,7 @@ sources:
   - name: "PBSS SF Bay"
     url: "https://www.pbss.org/chapter/SF-Bay"
     scraper: "associations.pbss"
-    enabled: false
+    enabled: true
 
   - name: "Washington Statistical Society"
     url: "https://washstat.org/"
@@ -158,6 +158,16 @@ sources:
     url: "https://baselbiometrics.github.io/home/docs/"
     scraper: "organizations.basel_biometric"
     enabled: false
+
+  - name: "Stats-Up-AI-Alliance"
+    url: "https://statsupai.org/events/webinars/"
+    scraper: "organizations.statsupai"
+    enabled: true
+
+  - name: "RealiseD Webinar Series"
+    url: "https://realised-ihi.eu/webinars/"
+    scraper: "organizations.realised"
+    enabled: true
 
   # Tech
   - name: "R Conferences"
