@@ -75,7 +75,7 @@ sources:
   - name: "GMU Statistics"
     url: "https://statistics.gmu.edu/about/events"
     scraper: "academic.gmu"
-    enabled: false  # Trumba JS calendar widget doesn't render in headless mode
+    enabled: true  # Uses 25Live JSON API (bypasses Trumba JS widget)
 
   - name: "Dana Farber"
     url: "https://ds.dfci.harvard.edu/events/"

@@ -91,7 +91,7 @@ StatEventsScraping/
 12. **RealiseD** (new source) - WordPress/Avada countdown timer ✅
 13. **PBSS** - React SPA, domcontentloaded ✅
 14. **McGill** - Disabled (bot protection) ❌
-15. **GMU** - Disabled (Trumba widget) ❌
+15. **GMU** - 25Live JSON API, bypasses Trumba widget ✅
 
 **Third wave (18 scrapers, 17 working):**
 16. **CTML Berkeley** - Drupal/OpenBerkeley, date prefix in titles ✅
@@ -250,16 +250,23 @@ date_range:
 | StatsUpAI | 3 | ✅ Single-page zoom link extraction |
 | RealiseD | 4 | ✅ WordPress/Avada, countdown timer dates (CET) |
 | PBSS | 15 (3 in range) | ✅ React SPA, domcontentloaded, keyword-boundary parsing |
+| GMU | 14 (3 in range) | ✅ 25Live JSON API, bypasses Trumba JS widget |
 
 ### Disabled Scrapers (Technical Limitations)
 
 | Scraper | Issue |
 |---------|-------|
 | McGill | Imperva/Distil bot protection blocks headless browsers |
-| GMU | Trumba JS calendar widget doesn't render in headless Playwright |
 | Cambridge MRC | DNS resolution failure - site unreachable |
 
-**Latest Run:** 172 total events, 47 within date range (30 enabled sources)
+### Recently Fixed Scrapers
+
+#### GMU Statistics ✅ FIXED
+- **Previous Issue:** Trumba JS calendar widget doesn't render in headless Playwright
+- **Solution:** Discovered 25Live/CollegeNET JSON API at `https://25livepub.collegenet.com/calendars/cec-statistics.json`
+- **Result:** 14 events found (3 within date range), output matches expected format
+
+**Latest Run:** 31 enabled sources, 2 disabled
 
 ### Recently Fixed Scrapers
 
@@ -355,7 +362,7 @@ Polished editorial design with:
 
 ---
 
-## Source Sites (33 Total, 30 Enabled)
+## Source Sites (33 Total, 31 Enabled)
 
 ### Academic (8)
 - Harvard HSPH Epidemiology Seminar Series ✅
@@ -363,7 +370,7 @@ Polished editorial design with:
 - McGill Biostatistics Seminars ❌ (bot protection)
 - Duke-Margolis Events ✅
 - Cambridge MRC Events ❌ (DNS failure)
-- GMU Statistics Seminars ❌ (Trumba widget)
+- GMU Statistics Seminars ✅ (25Live JSON API)
 - Dana Farber Data Science Events ✅
 - CTML Berkeley ✅
 

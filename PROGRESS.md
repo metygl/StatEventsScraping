@@ -2,11 +2,35 @@
 
 ## Current Status: Deployed to Vercel
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-10
 
 ---
 
-## Recent Update: 18 New Scrapers (Phase 11)
+## Recent Update: GMU Scraper Fixed (Phase 12)
+
+Re-enabled GMU Statistics scraper by discovering and using the 25Live/CollegeNET JSON API, bypassing the Trumba JS calendar widget that wouldn't render in headless Playwright.
+
+### GMU Statistics ✅ FIXED
+- **Previous Issue:** Trumba JS calendar widget doesn't render in headless Playwright
+- **Root Cause:** The embedded Trumba spud (`$Trumba.addSpud({ webName: "cec-statistics" })`) requires full browser JS execution
+- **Solution:**
+  - Discovered 25Live/CollegeNET JSON API at `https://25livepub.collegenet.com/calendars/cec-statistics.json`
+  - Returns structured event data: ISO 8601 dates with timezone offsets, HTML descriptions
+  - No JavaScript rendering needed — plain HTTP GET returning JSON
+  - Supports date filtering via `?startdate=YYYYMMDD&enddate=YYYYMMDD`
+- **Implementation:**
+  - Rewrote scraper to fetch JSON API directly (like FDA pattern)
+  - Parse ISO datetimes with timezone offsets (ET→PST conversion)
+  - Extract talk titles and speaker names from `<p>`-structured HTML descriptions
+  - Construct GMU canonical URLs using event IDs
+- **Result:** 14 total events, 3 within date range. Output matches expected format exactly.
+
+**Disabled Scrapers:** 2 (McGill - bot protection, Cambridge MRC - DNS failure)
+**Enabled Scrapers:** 31
+
+---
+
+## Previous Update: 18 New Scrapers (Phase 11)
 
 Added 18 new scrapers completing all remaining sources. 17 enabled, 1 disabled (Cambridge MRC DNS unreachable).
 
@@ -161,10 +185,10 @@ Added 18 new scrapers completing all remaining sources. 17 enabled, 1 disabled (
 | Basel Biometric | ✅ Working | 1 | Quarto/GitHub Pages, Swiss dates |
 | R Conferences | ✅ Working | 1 | Static HTML conference list |
 | McGill | ❌ Disabled | 0 | Imperva/Distil bot protection |
-| GMU | ❌ Disabled | 0 | Trumba JS widget doesn't render headless |
+| GMU | ✅ Working | 14 (3 in range) | 25Live JSON API, bypasses Trumba JS widget |
 | Cambridge MRC | ❌ Disabled | 0 | DNS resolution failure |
 
-**Latest Run Results:** 172 total events, 47 within date range (30 enabled sources)
+**Latest Run Results:** 31 enabled sources (previously 30)
 
 ### Phase 4: Output Generation ✅
 

@@ -1,12 +1,14 @@
 """
 Scraper for George Mason University Statistics Seminar Series.
 Site: https://statistics.gmu.edu/about/events
-Uses Trumba calendar widget (JavaScript-rendered).
+Uses 25Live/Trumba JSON API (bypasses JS widget rendering).
 """
 
 import re
-import asyncio
-from typing import List, Optional, Dict
+import json
+from datetime import datetime
+from typing import List, Optional
+import pytz
 
 from src.scrapers.base import BaseScraper
 from src.models.event import Event, LocationType
@@ -18,240 +20,212 @@ class GMUScraper(BaseScraper):
 
     SOURCE_NAME = "George Mason University R. Clifton Bailey Statistics Seminar Series"
     BASE_URL = "https://statistics.gmu.edu/about/events"
+    API_URL = "https://25livepub.collegenet.com/calendars/cec-statistics.json"
+    ET = pytz.timezone("America/New_York")
+    PST = pytz.timezone("America/Los_Angeles")
 
     async def scrape(self) -> List[Event]:
-        """Scrape GMU seminar listings from Trumba calendar widget."""
-        await self.navigate_to_page()
-
-        # Trumba JS widget needs time to render
-        await asyncio.sleep(6)
-
-        # Wait for Trumba content
-        found = await self.wait_for_content(
-            ".twSimpleTableEventRow, .trumba-events, .twEventTitle, "
-            "a[href*='trumbaEmbed'], iframe[src*='trumba']",
-            timeout=15000,
+        """Scrape GMU seminar listings from 25Live JSON API."""
+        response = await self.page.goto(
+            self.API_URL, wait_until="domcontentloaded", timeout=30000
         )
 
-        if not found:
-            self.logger.warning("Trumba calendar widget did not render, trying iframe approach")
-            # Check for Trumba iframe
-            iframe = await self.page.query_selector("iframe[src*='trumba']")
-            if iframe:
-                src = await iframe.get_attribute("src")
-                if src:
-                    await self.navigate_to_page(src)
-                    await asyncio.sleep(5)
+        if not response or response.status != 200:
+            self.logger.error(
+                f"Failed to fetch GMU JSON: status "
+                f"{response.status if response else 'no response'}"
+            )
+            return self.events
 
-        # Extract events from rendered Trumba content
-        event_data = await self._collect_events()
-        self.logger.info(f"Found {len(event_data)} GMU events to process")
+        # Get JSON content from page
+        body_text = await self.page.text_content("body") or ""
 
-        # Process event detail pages
-        for data in event_data[:10]:
+        try:
+            events_data = json.loads(body_text)
+        except json.JSONDecodeError:
+            # Browser may wrap JSON in <pre> tags
+            pre_elem = await self.page.query_selector("pre")
+            if pre_elem:
+                body_text = await self.get_element_text(pre_elem) or ""
+                events_data = json.loads(body_text)
+            else:
+                self.logger.error("Could not parse GMU JSON response")
+                return self.events
+
+        if not isinstance(events_data, list):
+            self.logger.error("GMU API response is not a list")
+            return self.events
+
+        self.logger.info(f"Found {len(events_data)} GMU events from API")
+
+        for event_obj in events_data:
             try:
-                event = await self._scrape_event_detail(data)
+                if event_obj.get("canceled", False):
+                    continue
+                event = self._parse_event(event_obj)
                 if event:
                     self.events.append(event)
             except Exception as e:
-                self.logger.warning(f"Failed to parse GMU event {data.get('url')}: {e}")
+                self.logger.debug(f"Failed to parse GMU event: {e}")
 
         return self.events
 
-    async def _collect_events(self) -> List[Dict]:
-        """Collect events from the Trumba calendar widget."""
-        event_data = []
-        seen_urls = set()
+    def _parse_event(self, data: dict) -> Optional[Event]:
+        """Parse a single event from the JSON API response."""
+        event_id = data.get("eventID")
+        description_html = data.get("description", "")
+        start_str = data.get("startDateTime", "")
+        end_str = data.get("endDateTime", "")
+        tz_offset = data.get("startTimeZoneOffset", "-0500")
 
-        # Try Trumba-specific selectors
-        links = await self.get_all_elements(
-            ".twSimpleTableEventRow a, .twEventTitle a, "
-            "a[href*='eventid'], a[href*='trumbaEmbed'], "
-            "a[href*='statistics.gmu.edu/about/events']"
-        )
-
-        for link in links:
-            try:
-                href = await self.get_href(link)
-                title = await self.get_element_text(link)
-
-                if not href or not title or len(title) < 10:
-                    continue
-
-                if href in seen_urls:
-                    continue
-
-                # Skip navigation links
-                if any(skip in title.lower() for skip in [
-                    "menu", "back", "home", "view all", "subscribe",
-                    "add to calendar", "more info"
-                ]):
-                    continue
-
-                seen_urls.add(href)
-
-                # Try to get date from parent row
-                parent = await link.evaluate_handle(
-                    "el => el.closest('.twSimpleTableEventRow, tr, .event-row')"
-                )
-                date_text = None
-                if parent:
-                    parent_content = await parent.evaluate("el => el?.textContent || ''")
-                    date_text = self._extract_date(parent_content)
-
-                event_data.append({
-                    "title": title.strip(),
-                    "url": href,
-                    "date_text": date_text,
-                })
-
-            except Exception as e:
-                self.logger.debug(f"Failed to collect event: {e}")
-
-        # Fallback: if no Trumba links found, try generic approach
-        if not event_data:
-            event_data = await self._collect_events_generic()
-
-        return event_data
-
-    async def _collect_events_generic(self) -> List[Dict]:
-        """Fallback: collect events from generic page content."""
-        event_data = []
-        body_text = await self.page.text_content("body") or ""
-
-        # Look for event-like patterns in the page text
-        # Pattern: title followed by date
-        blocks = re.split(r"\n{2,}", body_text)
-        for block in blocks:
-            block = block.strip()
-            if len(block) < 20:
-                continue
-
-            date_match = re.search(
-                r"((?:January|February|March|April|May|June|July|August|September|October|November|December)"
-                r"\s+\d{1,2},?\s+\d{4})",
-                block, re.IGNORECASE
-            )
-            if date_match:
-                # Find any link in this area
-                links = await self.get_all_elements("a")
-                for link in links:
-                    link_text = await self.get_element_text(link) or ""
-                    if any(word in link_text for word in block.split()[:3]):
-                        href = await self.get_href(link)
-                        if href:
-                            event_data.append({
-                                "title": block.split("\n")[0].strip()[:200],
-                                "url": href,
-                                "date_text": date_match.group(1),
-                            })
-                            break
-
-        return event_data
-
-    async def _scrape_event_detail(self, data: Dict) -> Optional[Event]:
-        """Scrape event detail page (may also be Trumba-rendered)."""
-        url = data["url"]
-        title = data["title"]
-        date_text = data.get("date_text")
-
-        await self.navigate_to_page(url)
-        await asyncio.sleep(3)  # Wait for Trumba to render detail view
-
-        body_text = await self.page.text_content("body") or ""
-
-        # Try to get title from detail page
-        h1_title = await self.get_text(
-            "h1, .twEventTitle, .trumba-event-title, .event-title"
-        )
-        if h1_title and len(h1_title) > 10:
-            title = h1_title.strip()
-
-        # Extract date from detail page if not from listing
-        if not date_text:
-            date_text = self._extract_date(body_text)
-
-        if not date_text:
-            self.logger.debug(f"No date found for {url}")
+        if not start_str or not event_id:
             return None
 
-        # Add ET timezone if none detected (GMU is in Eastern Time)
-        if not re.search(r"\b(?:ET|EST|EDT|PST|PDT|CT|CST|CDT)\b", date_text, re.IGNORECASE):
-            date_text = f"{date_text} ET"
+        # Parse datetimes with timezone offset
+        start_dt = self._parse_iso_with_offset(start_str, tz_offset)
+        end_dt = self._parse_iso_with_offset(end_str, tz_offset) if end_str else None
 
-        try:
-            start_dt, end_dt = DateParser.parse_datetime_range(date_text)
-        except Exception as e:
-            self.logger.debug(f"Could not parse date '{date_text}': {e}")
+        if not start_dt:
             return None
 
-        # Extract speaker
-        speakers = self._extract_speakers(title, body_text)
+        # Extract talk title and speaker from HTML description
+        description_text = self._strip_html(description_html)
+        talk_title = self._extract_talk_title(description_text)
+        speakers = self._extract_speakers_from_description(description_text)
 
-        # Clean title (remove speaker parenthetical if extracted)
-        clean_title = re.sub(r"\s*\([^)]*\)\s*$", "", title).strip()
+        # Build the event title
+        if talk_title:
+            title = talk_title
+        else:
+            title = data.get("title", "Statistics Seminar")
+
+        # Build GMU canonical URL
+        url = (
+            f"https://statistics.gmu.edu/about/events"
+            f"?trumbaEmbed=view%3Devent%26eventid%3D{event_id}"
+        )
+
+        # Detect location type from description
+        location_type = LocationType.HYBRID  # GMU seminars are live-streamed
+        if "virtual" in description_text.lower() and "in-person" not in description_text.lower():
+            location_type = LocationType.VIRTUAL
 
         return self.create_event(
-            title=clean_title,
+            title=title,
             url=url,
             start_datetime=start_dt,
             end_datetime=end_dt,
             speakers=speakers,
-            location_type=LocationType.HYBRID,
+            location_type=location_type,
             cost="free",
-            raw_date_text=date_text,
         )
 
-    def _extract_date(self, text: str) -> Optional[str]:
-        """Extract date and time from text."""
-        # Pattern: "February 6, 2026 11:00 AM - 12:00 PM ET"
-        match = re.search(
-            r"((?:January|February|March|April|May|June|July|August|September|October|November|December)"
-            r"\s+\d{1,2},?\s+\d{4})"
-            r"(?:[,\s]+(\d{1,2}:\d{2}\s*(?:am|pm)(?:\s*[-–]\s*\d{1,2}:\d{2}\s*(?:am|pm))?))?",
-            text, re.IGNORECASE
-        )
-        if match:
-            date_str = match.group(1)
-            time_str = match.group(2) or ""
-            return f"{date_str} {time_str}".strip()
+    def _parse_iso_with_offset(self, dt_str: str, offset: str) -> Optional[datetime]:
+        """Parse ISO datetime string with timezone offset, convert to PST."""
+        try:
+            # Parse the ISO datetime (e.g., "2026-02-13T11:00:00")
+            dt = datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%S")
 
-        # Pattern: "Thu, Feb 6, 2026"
-        match = re.search(
-            r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w*,?\s+"
-            r"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*"
-            r"\s+\d{1,2},?\s+\d{4})",
-            text, re.IGNORECASE
-        )
-        if match:
-            return match.group(1)
+            # Apply timezone offset (e.g., "-0500" for EST)
+            hours = int(offset[:3])
+            minutes = int(offset[0] + offset[3:5])
+            from datetime import timedelta, timezone
+            tz = timezone(timedelta(hours=hours, minutes=minutes))
+            dt = dt.replace(tzinfo=tz)
 
-        # Trumba format: "February 6, 2026"
-        match = re.search(
-            r"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*"
-            r"\s+\d{1,2},?\s+\d{4})",
-            text, re.IGNORECASE
-        )
-        if match:
-            return match.group(1)
+            # Convert to PST
+            return dt.astimezone(self.PST)
+        except Exception as e:
+            self.logger.debug(f"Could not parse datetime '{dt_str}': {e}")
+            return None
+
+    def _strip_html(self, html: str) -> str:
+        """Strip HTML tags and decode entities."""
+        if not html:
+            return ""
+        # Convert block-level tags to newlines
+        text = re.sub(r"<br\s*/?>", "\n", html, flags=re.IGNORECASE)
+        text = re.sub(r"</p>", "\n", text, flags=re.IGNORECASE)
+        text = re.sub(r"</div>", "\n", text, flags=re.IGNORECASE)
+        text = re.sub(r"</li>", "\n", text, flags=re.IGNORECASE)
+        # Strip remaining HTML tags
+        text = re.sub(r"<[^>]+>", "", text)
+        # Decode HTML entities
+        text = text.replace("&amp;", "&")
+        text = text.replace("&lt;", "<")
+        text = text.replace("&gt;", ">")
+        text = text.replace("&nbsp;", " ")
+        text = text.replace("&#160;", " ")
+        text = text.replace("&#39;", "'")
+        text = text.replace("&#8217;", "'")
+        text = text.replace("&#8211;", "-")
+        text = text.replace("&quot;", '"')
+        # Collapse whitespace but preserve newlines
+        text = re.sub(r"[ \t]+", " ", text)
+        text = re.sub(r"\n\s*\n+", "\n", text)
+        return text.strip()
+
+    def _extract_talk_title(self, text: str) -> Optional[str]:
+        """Extract talk title from description text.
+
+        Typical format:
+        Talk Title Here
+        Dr. Speaker Name, Position, Department, University
+        Location: ...
+        """
+        if not text:
+            return None
+
+        lines = [line.strip() for line in text.split("\n") if line.strip()]
+        if not lines:
+            return None
+
+        # The talk title is typically the first line(s) before a line starting with
+        # "Dr.", "Prof.", "Speaker:", "Location:", or a name pattern
+        title_parts = []
+        for line in lines:
+            # Stop at speaker/location/meta lines
+            if re.match(
+                r"^(?:Dr\.|Prof\.|Professor |Speaker|Location|"
+                r"This seminar|Abstract|Bio|Register|REGISTER|"
+                r"Please |Join us|Zoom|https?://)",
+                line, re.IGNORECASE
+            ):
+                break
+            # Stop if line looks like "Name, Position, Department"
+            if re.match(r"^[A-Z][a-z]+\s+[A-Z][a-z]+,\s+", line) and len(title_parts) > 0:
+                break
+            title_parts.append(line)
+
+        if title_parts:
+            title = " ".join(title_parts)
+            # Clean up
+            title = re.sub(r"\s+", " ", title).strip()
+            if len(title) > 10:
+                return title
 
         return None
 
-    def _extract_speakers(self, title: str, body_text: str) -> List[str]:
-        """Extract speaker names from title or body."""
+    def _extract_speakers_from_description(self, text: str) -> List[str]:
+        """Extract speaker names from description text."""
         speakers = []
 
-        # Check title for parenthetical speaker: "Title (Speaker Name)"
-        match = re.search(r"\(([^)]+)\)\s*$", title)
-        if match:
-            potential = match.group(1)
-            if len(potential) < 80 and any(c.isupper() for c in potential):
-                return self.parse_speakers(potential)
+        if not text:
+            return speakers
 
-        # Check body for "Speaker:" patterns
+        # Pattern: "Dr. FirstName LastName" or "Prof. FirstName LastName"
         match = re.search(
-            r"(?:Speaker|Presenter|Presented by)[:\s]+([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
-            body_text
+            r"(?:Dr\.|Prof\.|Professor )\s*([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?)",
+            text
+        )
+        if match:
+            speakers.append(match.group(1).strip())
+            return speakers
+
+        # Pattern: "Speaker: Name" or "Presented by Name"
+        match = re.search(
+            r"(?:Speaker|Presenter|Presented by)[:\s]+([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:-[A-Z][a-z]+)?)",
+            text
         )
         if match:
             speakers.append(match.group(1).strip())
