@@ -34,10 +34,12 @@ class EventScraperApp:
             config_path: Path to settings configuration file
         """
         self.config = self._load_config(config_path)
-        self.sources = self._load_sources("config/sources.yaml")
+        self.all_sources = self._load_all_sources("config/sources.yaml")
+        self.sources = [s for s in self.all_sources if s.get("enabled", True)]
         self.browser_manager = None
         self.events: List[Event] = []
         self.errors: Dict[str, str] = {}
+        self.source_results: List[Dict[str, Any]] = []
 
         setup_logging(
             level=self.config["logging"]["level"],
@@ -49,11 +51,11 @@ class EventScraperApp:
         with open(path, "r") as f:
             return yaml.safe_load(f)
 
-    def _load_sources(self, path: str) -> List[Dict[str, Any]]:
-        """Load source definitions, filtering to enabled sources only."""
+    def _load_all_sources(self, path: str) -> List[Dict[str, Any]]:
+        """Load all source definitions."""
         with open(path, "r") as f:
             data = yaml.safe_load(f)
-            return [s for s in data["sources"] if s.get("enabled", True)]
+            return data["sources"]
 
     def _get_date_range(self) -> tuple:
         """Get the date range for filtering events."""
@@ -104,12 +106,17 @@ class EventScraperApp:
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Process results
+            source_events_map: Dict[str, List[Event]] = {}
             for source, result in zip(self.sources, results):
                 if isinstance(result, Exception):
                     self.errors[source["name"]] = str(result)
                     logger.error(f"Failed to scrape {source['name']}: {result}")
+                    source_events_map[source["name"]] = []
                 elif result:
                     self.events.extend(result)
+                    source_events_map[source["name"]] = result
+                else:
+                    source_events_map[source["name"]] = []
 
             # Filter by date range
             filtered_events = [
@@ -117,6 +124,46 @@ class EventScraperApp:
                 for e in self.events
                 if e.is_within_date_range(date_range[0], date_range[1])
             ]
+
+            # Build per-source results for status page
+            for source in self.all_sources:
+                name = source["name"]
+                enabled = source.get("enabled", True)
+                if not enabled:
+                    self.source_results.append({
+                        "name": name,
+                        "url": source.get("url", ""),
+                        "enabled": False,
+                        "status": "disabled",
+                        "total_events": 0,
+                        "in_range_events": 0,
+                        "error_message": None,
+                    })
+                elif name in self.errors:
+                    self.source_results.append({
+                        "name": name,
+                        "url": source.get("url", ""),
+                        "enabled": True,
+                        "status": "error",
+                        "total_events": 0,
+                        "in_range_events": 0,
+                        "error_message": self.errors[name],
+                    })
+                else:
+                    src_events = source_events_map.get(name, [])
+                    in_range = [
+                        e for e in src_events
+                        if e.is_within_date_range(date_range[0], date_range[1])
+                    ]
+                    self.source_results.append({
+                        "name": name,
+                        "url": source.get("url", ""),
+                        "enabled": True,
+                        "status": "success",
+                        "total_events": len(src_events),
+                        "in_range_events": len(in_range),
+                        "error_message": None,
+                    })
 
             logger.info(
                 f"Scraped {len(self.events)} total events, "
@@ -173,16 +220,22 @@ class EventScraperApp:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         generator = HTMLGenerator()
+        total_sources = len(self.all_sources)
 
         # Generate HTML
         html_path = output_dir / output_config["html_file"]
-        generator.generate(events, str(html_path), date_range)
+        generator.generate(events, str(html_path), date_range, total_sources=total_sources)
         logger.info(f"Generated HTML: {html_path}")
 
         # Generate export page
         export_path = output_dir / "export.html"
         generator.generate_export_page(events, str(export_path), date_range, days_ahead)
         logger.info(f"Generated export page: {export_path}")
+
+        # Generate status page
+        status_path = output_dir / "status.html"
+        generator.generate_status_page(self.source_results, str(status_path), date_range)
+        logger.info(f"Generated status page: {status_path}")
 
         # Generate text if configured
         if output_config.get("generate_text", False):

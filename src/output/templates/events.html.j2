@@ -151,6 +151,15 @@
             font-size: 0.8rem;
         }
 
+        .header-updated {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+            margin-top: 12px;
+        }
+
         /* Date sections */
         .date-section {
             margin-bottom: 48px;
@@ -433,6 +442,25 @@
             box-shadow: var(--shadow-md);
         }
 
+        /* Status link */
+        .status-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--teal);
+            text-decoration: none;
+            background: var(--teal-soft);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+
+        .status-link:hover {
+            color: var(--ink);
+            background: var(--teal-soft);
+            box-shadow: var(--shadow-sm);
+        }
+
         /* Animations */
         @keyframes fadeSlideIn {
             from {
@@ -528,11 +556,16 @@
                 <div class="meta-item">
                     <span class="meta-highlight">{{ total_events }} events</span>
                 </div>
+                {% if total_sources %}
                 <div class="meta-item">
-                    <span class="meta-icon">&#128337;</span>
-                    <span>Updated {{ generated_at }}</span>
+                    <a href="/status" class="status-link">{{ total_sources }} sources</a>
                 </div>
+                {% endif %}
                 <a href="/export" class="export-link">&#128230; Export Events</a>
+            </div>
+            <div class="header-updated">
+                <span class="meta-icon">&#128337;</span>
+                <span>Updated {{ generated_at }}</span>
             </div>
         </header>
 

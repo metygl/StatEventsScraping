@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source Status | Statistics Events Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1f2e;
+            --ink-light: #3d4663;
+            --ink-muted: #6b7394;
+            --paper: #fafbfd;
+            --paper-warm: #f5f3ef;
+            --card: #ffffff;
+            --accent: #e85d4c;
+            --accent-glow: rgba(232, 93, 76, 0.15);
+            --teal: #2d9596;
+            --teal-soft: rgba(45, 149, 150, 0.12);
+            --violet: #7c5cbf;
+            --violet-soft: rgba(124, 92, 191, 0.12);
+            --gold: #d4a847;
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --red: #ef4444;
+            --red-soft: rgba(239, 68, 68, 0.1);
+            --border: #e8eaf0;
+            --border-subtle: #f0f1f5;
+            --shadow-sm: 0 1px 3px rgba(26, 31, 46, 0.04), 0 1px 2px rgba(26, 31, 46, 0.06);
+            --shadow-md: 0 4px 12px rgba(26, 31, 46, 0.06), 0 2px 4px rgba(26, 31, 46, 0.04);
+            --shadow-lg: 0 12px 40px rgba(26, 31, 46, 0.1), 0 4px 12px rgba(26, 31, 46, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.65;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background:
+                linear-gradient(135deg, var(--paper) 0%, var(--paper-warm) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 80px,
+                    var(--border-subtle) 80px,
+                    var(--border-subtle) 81px
+                );
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 32px;
+            animation: fadeSlideIn 0.6s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .header-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: var(--ink-muted);
+        }
+
+        /* Summary bar */
+        .summary-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 32px;
+            animation: fadeSlideIn 0.5s ease-out 0.1s backwards;
+        }
+
+        .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 24px;
+            background: var(--card);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-pill .pill-count {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .summary-pill.pill-total .pill-count { color: var(--ink); }
+        .summary-pill.pill-enabled .pill-count { color: var(--teal); }
+        .summary-pill.pill-success .pill-count { color: var(--green); }
+        .summary-pill.pill-failed .pill-count { color: var(--red); }
+
+        /* Status table */
+        .table-wrapper {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+            animation: fadeSlideIn 0.5s ease-out 0.2s backwards;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        thead th:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--paper);
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+
+        tbody td:first-child {
+            text-align: center;
+        }
+
+        /* Status indicators */
+        .status-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .status-icon.status-success {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .status-icon.status-error {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .status-icon.status-disabled {
+            background: var(--border-subtle);
+            color: var(--ink-muted);
+        }
+
+        /* Source name */
+        .source-name {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .source-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .source-name a:hover {
+            color: var(--accent);
+        }
+
+        /* Event counts */
+        .count-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .count-zero {
+            color: var(--ink-muted);
+        }
+
+        /* Notes */
+        .note-error {
+            color: var(--red);
+            font-size: 0.8rem;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .note-disabled {
+            color: var(--ink-muted);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* Disabled rows */
+        tr.row-disabled {
+            opacity: 0.55;
+        }
+
+        tr.row-error {
+            background: var(--red-soft);
+        }
+
+        tr.row-error:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        /* Footer */
+        .footer-note {
+            margin-top: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-muted);
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 16px 60px;
+            }
+
+            .summary-bar {
+                gap: 8px;
+            }
+
+            .summary-pill {
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+
+            thead th, tbody td {
+                padding: 10px 10px;
+                font-size: 0.8rem;
+            }
+
+            .note-error {
+                max-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">&larr; Back to Events</a>
+            <div class="header-eyebrow">Source Health</div>
+            <h1>Source Status</h1>
+            
+            <p class="header-subtitle">Scraping results for February 10, 2026 &mdash; March 03, 2026</p>
+            
+        </header>
+
+        <div class="summary-bar">
+            <div class="summary-pill pill-total">
+                <span class="pill-count">33</span>
+                <span>Total</span>
+            </div>
+            <div class="summary-pill pill-enabled">
+                <span class="pill-count">31</span>
+                <span>Enabled</span>
+            </div>
+            <div class="summary-pill pill-success">
+                <span class="pill-count">30</span>
+                <span>Successful</span>
+            </div>
+            
+            <div class="summary-pill pill-failed">
+                <span class="pill-count">1</span>
+                <span>Failed</span>
+            </div>
+            
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Source</th>
+                        <th>Total Events</th>
+                        <th>In Range</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr class="row-error">
+                        <td>
+                            
+                            <span class="status-icon status-error">&#10007;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://ds.dfci.harvard.edu/events/" target="_blank" rel="noopener">Dana Farber</a>
+                            
+                        </td>
+                        <td class="count-cell count-zero">0</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                            <span class="note-error" title="Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to &#34;https://ds.dfci.harvard.edu/events/&#34;, waiting until &#34;domcontentloaded&#34;
+">Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to &#34;https://ds.dfci.harvard.edu/events/&#34;, waiting until &#34;domcontentloaded&#34;
+</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://community.amstat.org/bostonchapter/upcoming-events/upcoming-events" target="_blank" rel="noopener">ASA Boston</a>
+                            
+                        </td>
+                        <td class="count-cell ">5</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://ww2.amstat.org/dateline/index.cfm?fuseaction=main" target="_blank" rel="noopener">ASA Calendar</a>
+                            
+                        </td>
+                        <td class="count-cell ">18</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.amstatgeorgia.org/events" target="_blank" rel="noopener">ASA Georgia</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="http://asanjchapter.org/" target="_blank" rel="noopener">ASA New Jersey</a>
+                            
+                        </td>
+                        <td class="count-cell ">2</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://community.amstat.org/philadelphia/webinar" target="_blank" rel="noopener">ASA Philadelphia</a>
+                            
+                        </td>
+                        <td class="count-cell ">15</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://community.amstat.org/sdasa/home" target="_blank" rel="noopener">ASA San Diego</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.amstat.org/ASA/Education/Web-Based-Lectures.aspx" target="_blank" rel="noopener">ASA Webinars</a>
+                            
+                        </td>
+                        <td class="count-cell ">5</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://baselbiometrics.github.io/home/docs/events_upcoming.html" target="_blank" rel="noopener">Basel Biometric Society</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://ctml.berkeley.edu/" target="_blank" rel="noopener">CTML Berkeley</a>
+                            
+                        </td>
+                        <td class="count-cell ">2</td>
+                        <td class="count-cell ">2</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://dahshu.wildapricot.org/events" target="_blank" rel="noopener">DahShu</a>
+                            
+                        </td>
+                        <td class="count-cell ">3</td>
+                        <td class="count-cell ">3</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://healthpolicy.duke.edu/events" target="_blank" rel="noopener">Duke-Margolis</a>
+                            
+                        </td>
+                        <td class="count-cell ">4</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.enar.org/education/" target="_blank" rel="noopener">ENAR</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.fda.gov/news-events" target="_blank" rel="noopener">FDA</a>
+                            
+                        </td>
+                        <td class="count-cell ">7</td>
+                        <td class="count-cell ">6</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://statistics.gmu.edu/about/events" target="_blank" rel="noopener">GMU Statistics</a>
+                            
+                        </td>
+                        <td class="count-cell ">14</td>
+                        <td class="count-cell ">3</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://hsph.harvard.edu/department/epidemiology/seminar-series/" target="_blank" rel="noopener">Harvard HSPH Epidemiology</a>
+                            
+                        </td>
+                        <td class="count-cell ">5</td>
+                        <td class="count-cell ">2</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.biometricsociety.org/meetings/events" target="_blank" rel="noopener">IBS</a>
+                            
+                        </td>
+                        <td class="count-cell ">2</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.icsa.org/category/events/" target="_blank" rel="noopener">ICSA</a>
+                            
+                        </td>
+                        <td class="count-cell ">20</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.ispor.org/conferences-education/conferences/upcoming-conferences" target="_blank" rel="noopener">ISPOR</a>
+                            
+                        </td>
+                        <td class="count-cell ">2</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://instats.org/results?view=Seminars" target="_blank" rel="noopener">Instats Seminar</a>
+                            
+                        </td>
+                        <td class="count-cell ">20</td>
+                        <td class="count-cell ">10</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.niss.org/events" target="_blank" rel="noopener">NISS</a>
+                            
+                        </td>
+                        <td class="count-cell ">9</td>
+                        <td class="count-cell ">4</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://nestat.org/" target="_blank" rel="noopener">New England Statistical Society</a>
+                            
+                        </td>
+                        <td class="count-cell count-zero">0</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.pbss.org/chapter/SF-Bay" target="_blank" rel="noopener">PBSS SF Bay</a>
+                            
+                        </td>
+                        <td class="count-cell ">15</td>
+                        <td class="count-cell ">5</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.psiweb.org/events/psi-events" target="_blank" rel="noopener">PSI</a>
+                            
+                        </td>
+                        <td class="count-cell ">9</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://posit.co/events/" target="_blank" rel="noopener">Posit</a>
+                            
+                        </td>
+                        <td class="count-cell ">6</td>
+                        <td class="count-cell ">5</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.r-project.org/conferences/" target="_blank" rel="noopener">R Conferences</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://rss.org.uk/training-events/events/" target="_blank" rel="noopener">RSS</a>
+                            
+                        </td>
+                        <td class="count-cell ">11</td>
+                        <td class="count-cell ">3</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://realised-ihi.eu/webinars/" target="_blank" rel="noopener">RealiseD Webinar Series</a>
+                            
+                        </td>
+                        <td class="count-cell ">4</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://statsupai.org/events/webinars/" target="_blank" rel="noopener">Stats-Up-AI-Alliance</a>
+                            
+                        </td>
+                        <td class="count-cell ">3</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://epibiostat.ucsf.edu/events" target="_blank" rel="noopener">UCSF Epidemiology</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell ">1</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="">
+                        <td>
+                            
+                            <span class="status-icon status-success">&#10003;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://washstat.org/" target="_blank" rel="noopener">Washington Statistical Society</a>
+                            
+                        </td>
+                        <td class="count-cell ">1</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="row-disabled">
+                        <td>
+                            
+                            <span class="status-icon status-disabled">&mdash;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.mrc-bsu.cam.ac.uk/events/" target="_blank" rel="noopener">Cambridge MRC</a>
+                            
+                        </td>
+                        <td class="count-cell count-zero">0</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                            <span class="note-disabled">Disabled</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr class="row-disabled">
+                        <td>
+                            
+                            <span class="status-icon status-disabled">&mdash;</span>
+                            
+                        </td>
+                        <td class="source-name">
+                            
+                            <a href="https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics" target="_blank" rel="noopener">McGill Biostatistics</a>
+                            
+                        </td>
+                        <td class="count-cell count-zero">0</td>
+                        <td class="count-cell count-zero">0</td>
+                        <td>
+                            
+                            <span class="note-disabled">Disabled</span>
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer-note">
+            Updated 2026-02-10 09:36:59 PST
+        </div>
+    </div>
+</body>
+</html>

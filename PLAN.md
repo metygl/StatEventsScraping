@@ -483,6 +483,22 @@ async def scrape(self):
 
 ---
 
+### Phase 13: Source Status Page ✅ (NEW)
+36. Status page template (`src/output/templates/status.html.j2`)
+    - Summary pills (total, enabled, successful, failed)
+    - Status table with green/red/disabled indicators
+    - Source names linked to URLs, error messages with tooltips
+    - Responsive layout matching existing design language
+37. HTMLGenerator `generate_status_page()` method
+    - Computes summary stats, sorts results (errors → success → disabled)
+38. Per-source result tracking in `src/main.py`
+    - Loads all sources (including disabled)
+    - Tracks status, total events, in-range events, error messages per source
+39. Events page header update
+    - Clickable "N sources" link to `/status`
+    - Updated timestamp moved to its own line
+40. Vercel `/status` route for clean URL
+
 ## Future Improvements
 
 ### High Priority

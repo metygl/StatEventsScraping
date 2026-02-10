@@ -6,7 +6,29 @@
 
 ---
 
-## Recent Update: GMU Scraper Fixed (Phase 12)
+## Recent Update: Source Status Page (Phase 13)
+
+Added a `/status` page showing scraping health for all 33 event sources with green/red/disabled indicators, event counts, and error messages.
+
+### Changes
+- **`src/main.py`** — Loads all sources (including disabled), tracks per-source results (status, total events, in-range events, error messages), passes data to status page generator
+- **`src/output/html_generator.py`** — Added `generate_status_page()` method, passes `total_sources` to events template
+- **`src/output/templates/status.html.j2`** — New template with summary pills, status table (sorted: errors first, then success, then disabled), responsive layout
+- **`src/output/templates/events.html.j2`** — Added clickable "N sources" link to `/status` in header, moved Updated timestamp to its own line below Export Events
+- **`vercel.json`** — Added `/status` rewrite route
+
+### Features
+- Summary bar: total, enabled, successful, failed counts as pill badges
+- Table with status icon (green checkmark / red X / grey dash), source name (linked), total events, in-range events, notes
+- Error messages shown with tooltip for full text
+- Disabled rows styled with reduced opacity
+- Matches existing design language (CSS vars, fonts, geometric background)
+
+**Latest Run:** 188 total events, 50 within date range, 1 failure (Dana Farber timeout)
+
+---
+
+## Previous Update: GMU Scraper Fixed (Phase 12)
 
 Re-enabled GMU Statistics scraper by discovering and using the 25Live/CollegeNET JSON API, bypassing the Trumba JS calendar widget that wouldn't render in headless Playwright.
 
@@ -584,7 +606,7 @@ Edit `config/sources.yaml` and set `enabled: true/false` for each source.
 |----------|-------|-------|
 | Python modules | 43 | Core application code (includes all 33 scrapers) |
 | Config files | 2 | YAML configuration |
-| Templates | 2 | Jinja2 HTML templates (events.html.j2, export.html.j2) |
+| Templates | 3 | Jinja2 HTML templates (events.html.j2, export.html.j2, status.html.j2) |
 | Scripts | 2 | Shell + Python |
 | Tests | 4 | pytest unit tests |
 | Documentation | 2 | plan.md, progress.md |

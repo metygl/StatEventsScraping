@@ -68,6 +68,7 @@ class HTMLGenerator:
         events: List[Event],
         output_path: str,
         date_range: tuple = None,
+        total_sources: int = 0,
     ) -> str:
         """
         Generate HTML file from events.
@@ -76,6 +77,7 @@ class HTMLGenerator:
             events: List of Event objects
             output_path: Path to write HTML file
             date_range: Optional tuple of (start_date, end_date) for header
+            total_sources: Total number of configured sources
 
         Returns:
             Path to generated file
@@ -93,6 +95,7 @@ class HTMLGenerator:
             "grouped_events": grouped_events,
             "generated_at": datetime.now(pst).strftime("%Y-%m-%d %H:%M:%S PST"),
             "total_events": len(events),
+            "total_sources": total_sources,
             "date_range_start": (
                 date_range[0].strftime("%B %d, %Y") if date_range else None
             ),
@@ -217,6 +220,61 @@ class HTMLGenerator:
         html_content = template.render(**context)
 
         # Write to file
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text(html_content, encoding="utf-8")
+
+        return str(output_file)
+
+    def generate_status_page(
+        self,
+        source_results: List[Dict],
+        output_path: str,
+        date_range: tuple = None,
+    ) -> str:
+        """
+        Generate status page showing per-source scraping health.
+
+        Args:
+            source_results: List of per-source result dicts
+            output_path: Path to write HTML file
+            date_range: Optional tuple of (start_date, end_date)
+
+        Returns:
+            Path to generated file
+        """
+        # Compute summary stats
+        total = len(source_results)
+        enabled = sum(1 for s in source_results if s["enabled"])
+        successful = sum(1 for s in source_results if s["status"] == "success")
+        failed = sum(1 for s in source_results if s["status"] == "error")
+
+        # Sort: errors first, then successful by name, then disabled
+        status_order = {"error": 0, "success": 1, "disabled": 2}
+        sorted_results = sorted(
+            source_results,
+            key=lambda s: (status_order.get(s["status"], 1), s["name"]),
+        )
+
+        pst = pytz.timezone("America/Los_Angeles")
+        context = {
+            "source_results": sorted_results,
+            "total_sources": total,
+            "enabled_sources": enabled,
+            "successful_sources": successful,
+            "failed_sources": failed,
+            "generated_at": datetime.now(pst).strftime("%Y-%m-%d %H:%M:%S PST"),
+            "date_range_start": (
+                date_range[0].strftime("%B %d, %Y") if date_range else None
+            ),
+            "date_range_end": (
+                date_range[1].strftime("%B %d, %Y") if date_range else None
+            ),
+        }
+
+        template = self.env.get_template("status.html.j2")
+        html_content = template.render(**context)
+
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_text(html_content, encoding="utf-8")
