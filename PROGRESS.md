@@ -2,11 +2,55 @@
 
 ## Current Status: Deployed to Vercel
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-02-09
 
 ---
 
-## Recent Update: Extended Date Range
+## Recent Update: 7 New Scrapers (Phase 10)
+
+Added 7 new scrapers to expand event coverage. 5 are working, 2 disabled due to technical limitations.
+
+### New Working Scrapers
+
+| Scraper | Pattern | Events | Key Technique |
+|---------|---------|--------|---------------|
+| UCSF | List+Detail | 1+ | Drupal static HTML, "Date:/Time:/Speaker:" regex |
+| ASA Philadelphia | List+Detail | 15 | Speaker from H1, title from body after date line |
+| StatsUpAI (new source) | Single Page | 3 | Zoom registration link text parsing |
+| RealiseD (new source) | List+Detail | 4 | Avada countdown `data-timer` attribute for dates, CET timezone |
+| PBSS | React SPA | 15 (3 in range) | `domcontentloaded`, keyword-boundary parsing (no newlines) |
+
+### Disabled Scrapers
+
+| Scraper | Reason |
+|---------|--------|
+| McGill | Imperva/Distil bot protection blocks headless browsers |
+| GMU | Trumba JS calendar widget doesn't render in headless Playwright |
+
+### Files Created
+- `src/scrapers/academic/ucsf.py`
+- `src/scrapers/associations/asa_philadelphia.py`
+- `src/scrapers/associations/pbss.py`
+- `src/scrapers/organizations/statsupai.py`
+- `src/scrapers/organizations/realised.py`
+- `src/scrapers/academic/mcgill.py` (disabled)
+- `src/scrapers/academic/gmu.py` (disabled)
+
+### Files Modified
+- `src/scrapers/__init__.py` - Added 2 new registry entries (StatsUpAI, RealiseD)
+- `config/sources.yaml` - 3 sources enabled, 2 new sources added, 2 disabled with comments
+
+### Technical Notes
+- **PBSS React SPA**: Must use `wait_until="domcontentloaded"` (never reaches `networkidle`). Page text renders on a single line without newlines - use section markers (Speakers:, Event Description, Registration) as delimiters instead of `\n`.
+- **RealiseD WordPress/Avada**: Links wrap images (empty text). Date extracted from Avada countdown widget's `data-timer` HTML attribute (format: `2026-02-03-17-00-00` in CET).
+- **StatsUpAI**: Events embedded in zoom registration links. Title found by searching backwards from date line in page text.
+- **Speaker extraction**: Remove parenthesized affiliations, split by semicolons AND commas, filter company names by suffix words (Therapeutics, Biosciences, etc.), remove degree suffixes.
+
+**Latest Run:** 102 total events, 37 within date range (15 enabled sources)
+
+---
+
+## Previous Update: Extended Date Range
 
 - Changed event date range from 2 weeks (14 days) to 3 weeks (21 days) in `config/settings.yaml`
 - This allows users to see more upcoming events in the output
@@ -62,20 +106,27 @@
 | Retry decorator | ✅ Complete | `src/utils/retry.py` |
 | Logging config | ✅ Complete | `src/utils/logging_config.py` |
 
-### Phase 3: Site-Specific Scrapers ✅ (8 of 31)
+### Phase 3: Site-Specific Scrapers ✅ (15 of 33, 13 working)
 
 | Scraper | Status | Events Found | Notes |
 |---------|--------|--------------|-------|
 | Instats | ✅ Working | 20 | Bubble.io SPA - visits individual pages for accurate times |
 | FDA | ✅ Working | 11 (6 in range) | JSON API + page visits for times |
 | NISS | ✅ Working | 10 | List+detail pattern, collects URLs first |
-| DahShu | ✅ Working | 1 | Wild Apricot, deduplicates by event ID |
+| DahShu | ✅ Working | 3 | Wild Apricot, deduplicates by event ID |
 | Harvard HSPH | ✅ Working | 3 | List+detail pattern, clean title/speaker extraction |
 | ASA Webinars | ✅ Working | 5 | Working as expected |
 | PSI | ✅ Working | 10 | List+detail with GMT time extraction |
 | Posit | ✅ Working | 5 (3 in range) | Fixed card selectors for new site design |
+| UCSF | ✅ Working | 1+ | Drupal list+detail, static HTML |
+| ASA Philadelphia | ✅ Working | 15 | List+detail, speaker from H1, title from body |
+| StatsUpAI | ✅ Working | 3 | Single-page zoom link extraction (new source) |
+| RealiseD | ✅ Working | 4 | WordPress/Avada countdown timer dates (new source) |
+| PBSS | ✅ Working | 15 (3 in range) | React SPA, domcontentloaded, keyword-boundary parsing |
+| McGill | ❌ Disabled | 0 | Imperva/Distil bot protection |
+| GMU | ❌ Disabled | 0 | Trumba JS widget doesn't render headless |
 
-**Latest Run Results:** 65 total events, 27 within date range
+**Latest Run Results:** 102 total events, 37 within date range
 
 ### Phase 4: Output Generation ✅
 
@@ -287,18 +338,18 @@ Fixed extraneous text appearing in event output:
 
 ## Pending Tasks
 
-### Additional Scrapers (23 remaining)
+### Additional Scrapers (16 remaining)
 
 These scrapers are defined in `sources.yaml` but set to `enabled: false`:
 
 **Academic:**
 - [ ] CTML Berkeley
-- [ ] UCSF
-- [ ] McGill
 - [ ] Duke-Margolis
 - [ ] Cambridge MRC
-- [ ] GMU
 - [ ] Dana Farber
+- [x] ~~UCSF~~ ✅ Implemented 2026-02-09
+- [x] ~~McGill~~ ❌ Bot protection - disabled
+- [x] ~~GMU~~ ❌ Trumba widget - disabled
 
 **Associations:**
 - [ ] ASA Calendar
@@ -306,21 +357,20 @@ These scrapers are defined in `sources.yaml` but set to `enabled: false`:
 - [ ] ASA Georgia
 - [ ] ASA New Jersey
 - [ ] ASA San Diego
-- [ ] ASA Philadelphia
 - [ ] ICSA
 - [ ] NESTAT
 - [ ] ENAR
 - [ ] IBS
 - [ ] RSS
-- [ ] PBSS
 - [ ] Washington Statistical Society
+- [x] ~~ASA Philadelphia~~ ✅ Implemented 2026-02-09
+- [x] ~~PBSS~~ ✅ Implemented 2026-02-09
 
 **Organizations:**
 - [ ] ISPOR
 - [ ] Basel Biometric
-
-**Tech:**
-- [ ] R Conferences
+- [x] ~~StatsUpAI~~ ✅ Implemented 2026-02-09 (new source)
+- [x] ~~RealiseD~~ ✅ Implemented 2026-02-09 (new source)
 
 ### Enhancements
 
@@ -336,6 +386,7 @@ These scrapers are defined in `sources.yaml` but set to `enabled: false`:
 - [x] ~~Fix time extraction for all scrapers~~ ✅ Fixed 2026-01-14 (visit individual pages)
 - [x] ~~Clean up extraneous text in output~~ ✅ Fixed 2026-01-14 (blocklists, pattern cleanup)
 - [x] ~~Redesign HTML template~~ ✅ Fixed 2026-01-14 (polished editorial design)
+- [x] ~~Add 7 new scrapers~~ ✅ Added 2026-02-09 (5 working, 2 disabled)
 
 ---
 
@@ -456,13 +507,13 @@ Edit `config/sources.yaml` and set `enabled: true/false` for each source.
 
 | Category | Count | Notes |
 |----------|-------|-------|
-| Python modules | 18 | Core application code |
+| Python modules | 25 | Core application code (includes 7 new scrapers) |
 | Config files | 2 | YAML configuration |
 | Templates | 2 | Jinja2 HTML templates (events.html.j2, export.html.j2) |
 | Scripts | 2 | Shell + Python |
 | Tests | 4 | pytest unit tests |
 | Documentation | 2 | plan.md, progress.md |
-| **Total files** | **30** | Excluding __init__.py |
+| **Total files** | **37** | Excluding __init__.py |
 
 ---
 

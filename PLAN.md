@@ -84,9 +84,18 @@ StatEventsScraping/
 7. **PSI** - European organization
 8. **Posit** - Tech company events
 
-**Future additions (23 remaining)** - add iteratively using base patterns:
-- Academic: UCSF, McGill, Duke-Margolis, Cambridge MRC, GMU, Dana Farber, CTML Berkeley
-- Associations: ASA chapters (5), ICSA, ENAR, IBS, RSS, NESTAT, PBSS, Washington Stat
+**Second wave (7 scrapers, 5 working):**
+9. **UCSF** - Drupal list+detail, static HTML ✅
+10. **ASA Philadelphia** - List+detail, speaker from H1 ✅
+11. **StatsUpAI** (new source) - Zoom link extraction ✅
+12. **RealiseD** (new source) - WordPress/Avada countdown timer ✅
+13. **PBSS** - React SPA, domcontentloaded ✅
+14. **McGill** - Disabled (bot protection) ❌
+15. **GMU** - Disabled (Trumba widget) ❌
+
+**Future additions (16 remaining)** - add iteratively using base patterns:
+- Academic: Duke-Margolis, Cambridge MRC, Dana Farber, CTML Berkeley
+- Associations: ASA chapters (4), ICSA, ENAR, IBS, RSS, NESTAT, Washington Stat
 - Organizations: ISPOR, Basel Biometric
 - Tech: R Conferences
 
@@ -138,6 +147,18 @@ StatEventsScraping/
 26. Navigation between events.html and export.html
 27. Vercel `/export` route for clean URL
 28. Unit tests for export functionality (15 tests)
+
+### Phase 10: Expanded Scrapers ✅ (NEW)
+29. 7 new scrapers implemented (5 working, 2 disabled due to technical limitations)
+    - **UCSF** - Drupal list+detail, static HTML
+    - **ASA Philadelphia** - List+detail, speaker from H1, title from body text
+    - **StatsUpAI** (new source) - Single-page zoom link extraction
+    - **RealiseD** (new source) - WordPress/Avada with countdown timer dates
+    - **PBSS** - React SPA with domcontentloaded, keyword-boundary parsing
+    - **McGill** - Disabled (Imperva/Distil bot protection)
+    - **GMU** - Disabled (Trumba JS calendar widget doesn't render headless)
+30. Updated `src/scrapers/__init__.py` with 2 new registry entries
+31. Updated `config/sources.yaml` - 3 enabled, 2 new sources added, 2 disabled
 
 ## Key Technical Decisions
 
@@ -195,13 +216,25 @@ date_range:
 | Instats | 20 | ✅ Bubble.io SPA - visits pages for accurate times |
 | FDA | 11 (6 in range) | ✅ JSON API + page visits for times |
 | NISS | 10 | Drupal site, list+detail pattern |
-| DahShu | 1 | Wild Apricot, deduplicates by event ID |
+| DahShu | 3 | Wild Apricot, deduplicates by event ID |
 | Harvard HSPH | 3 | ✅ List+detail, clean title/speaker extraction |
 | ASA Webinars | 5 | Stable, standard HTML structure |
 | PSI | 10 | ✅ List+detail with GMT→PST time conversion |
 | Posit | 5 (3 in range) | ✅ Fixed card selectors for new site design |
+| UCSF | 1+ | ✅ Drupal list+detail, static HTML |
+| ASA Philadelphia | 15 | ✅ List+detail, speaker from H1, title from body |
+| StatsUpAI | 3 | ✅ Single-page zoom link extraction |
+| RealiseD | 4 | ✅ WordPress/Avada, countdown timer dates (CET) |
+| PBSS | 15 (3 in range) | ✅ React SPA, domcontentloaded, keyword-boundary parsing |
 
-**Latest Run:** 65 total events, 27 within date range
+### Disabled Scrapers (Technical Limitations)
+
+| Scraper | Issue |
+|---------|-------|
+| McGill | Imperva/Distil bot protection blocks headless browsers |
+| GMU | Trumba JS calendar widget doesn't render in headless Playwright |
+
+**Latest Run:** 102 total events, 37 within date range
 
 ### Recently Fixed Scrapers
 
@@ -297,16 +330,17 @@ Polished editorial design with:
 
 ---
 
-## Source Sites (31 Total)
+## Source Sites (33 Total, 15 Enabled)
 
-### Academic (7)
+### Academic (8)
 - Harvard HSPH Epidemiology Seminar Series ✅
-- UCSF Department of Epidemiology & Biostatistics
-- McGill Biostatistics Seminars
+- UCSF Department of Epidemiology & Biostatistics ✅
+- McGill Biostatistics Seminars ❌ (bot protection)
 - Duke-Margolis Events
 - Cambridge MRC Events
-- GMU Statistics Seminars
+- GMU Statistics Seminars ❌ (Trumba widget)
 - Dana Farber Data Science Events
+- CTML Berkeley
 
 ### Professional Associations (14)
 - ASA Webinars ✅
@@ -315,23 +349,24 @@ Polished editorial design with:
 - ASA Georgia Chapter
 - ASA New Jersey Chapter
 - ASA San Diego Chapter
-- ASA Philadelphia Chapter
+- ASA Philadelphia Chapter ✅
 - ICSA Events
-- PSI Events ✅ (6 events)
+- PSI Events ✅
 - ENAR Webinar Series
 - IBS Meetings Calendar
 - RSS Events Calendar
 - New England Statistical Society
-- PBSS SF Bay
+- PBSS SF Bay ✅
 
-### Organizations (7)
+### Organizations (8)
 - NISS-Merck Calendar ✅
 - DahShu Webinars ✅
-- Instats Seminars ✅ (43 events)
+- Instats Seminars ✅
 - ISPOR Events
-- CTML Berkeley
 - Basel Biometric Society
 - Washington Statistical Society
+- Stats-Up-AI-Alliance ✅ (new)
+- RealiseD Webinar Series ✅ (new)
 
 ### Government (1)
 - FDA Events ✅ (JSON API)
@@ -355,7 +390,7 @@ async def scrape(self):
         if event:
             self.events.append(event)
 ```
-**Used by:** NISS, DahShu, Harvard HSPH
+**Used by:** NISS, DahShu, Harvard HSPH, UCSF, ASA Philadelphia, RealiseD
 
 ### Pattern 2: Single Page Extraction
 Best for sites with all info on listing page:
@@ -367,7 +402,7 @@ async def scrape(self):
         # Extract all data from item element
         event = await self._parse_item(item)
 ```
-**Used by:** ASA Webinars, PSI
+**Used by:** ASA Webinars, PSI, StatsUpAI
 
 ### Pattern 3: Bubble.io SPA with Card Extraction
 For Bubble.io JavaScript-heavy sites that don't use traditional URLs:
@@ -393,6 +428,27 @@ async def scrape(self):
 - No traditional URLs - navigation via JavaScript click handlers
 - Data embedded in card text, extract with regex
 
+### Pattern 4: React SPA with domcontentloaded
+For React SPAs that never reach `networkidle`:
+```python
+async def _goto(self, url):
+    await self.page.goto(url, wait_until="domcontentloaded", timeout=30000)
+
+async def scrape(self):
+    await self._goto(self.BASE_URL)
+    await asyncio.sleep(8)  # React needs time to render
+    links = await self.get_all_elements("a[href*='eventDetails']")
+    for link in links:
+        # Visit each detail page
+        event = await self._scrape_event_page(data)
+```
+**Used by:** PBSS ✅
+
+**Key insights for React SPAs:**
+- Must use `domcontentloaded` not `networkidle` (React SPAs never reach idle)
+- Text renders on single line without newlines - use keyword boundaries (Speakers:, Event Description) instead of `\n`
+- asyncio.sleep(5-8) needed for content to render
+
 ---
 
 ## Future Improvements
@@ -417,4 +473,4 @@ async def scrape(self):
 - [ ] Add RSS feed output
 - [ ] Add email/Slack notifications
 - [ ] Add web dashboard for monitoring
-- [ ] Implement remaining 23 scrapers
+- [ ] Implement remaining 16 scrapers
