@@ -6,47 +6,67 @@
 
 ---
 
-## Recent Update: 7 New Scrapers (Phase 10)
+## Recent Update: 18 New Scrapers (Phase 11)
 
-Added 7 new scrapers to expand event coverage. 5 are working, 2 disabled due to technical limitations.
+Added 18 new scrapers completing all remaining sources. 17 enabled, 1 disabled (Cambridge MRC DNS unreachable).
 
 ### New Working Scrapers
 
 | Scraper | Pattern | Events | Key Technique |
 |---------|---------|--------|---------------|
-| UCSF | List+Detail | 1+ | Drupal static HTML, "Date:/Time:/Speaker:" regex |
-| ASA Philadelphia | List+Detail | 15 | Speaker from H1, title from body after date line |
-| StatsUpAI (new source) | Single Page | 3 | Zoom registration link text parsing |
-| RealiseD (new source) | List+Detail | 4 | Avada countdown `data-timer` attribute for dates, CET timezone |
-| PBSS | React SPA | 15 (3 in range) | `domcontentloaded`, keyword-boundary parsing (no newlines) |
+| CTML Berkeley | List+Detail | 2 | Drupal/OpenBerkeley, date prefix in titles (M/DD/YY) |
+| Duke-Margolis | List+Detail | 4 | Drupal Views module, article selectors |
+| Dana Farber | List+Detail | 1 | WordPress/TEC plugin, `domcontentloaded` (networkidle timeout) |
+| ASA Calendar | Click+Form+Parse | 17 | ColdFusion form POST, click-through navigation, inline results |
+| ASA Boston | SPA-with-wait | 5 | Higher Logic/React, rich text block parsing |
+| ASA Georgia | Single Page | 1 | Squarespace, h3 + JS sibling text traversal |
+| ASA New Jersey | Single Page | 2 | Basic static HTML, multi-page (homepage + events.html) |
+| ASA San Diego | SPA-with-wait | 1 | Higher Logic/React, labeled date patterns |
+| ICSA | API | 20 | WordPress REST API `/wp-json/wp/v2/posts?categories=4` |
+| NESTAT | Multi-page | 0 | Static HTML, 5 sub-pages (low volume source) |
+| ENAR | Single Page | 1 | Static ColdFusion, h3 titles with date/speaker extraction |
+| IBS | SPA-with-wait | 0-2 | React SPA (HigherLogic), intermittent rendering |
+| RSS | List+Detail | 11 | ASP.NET WebForms, UK time format (dots→colons), GMT timezone |
+| Washington Stat | Single Page | 1 | Static HTML, seminars + events pages |
+| ISPOR | List+Detail | 2 | Sitefinity CMS, top-level conference pages only |
+| Basel Biometric | Single Page | 1 | Quarto/GitHub Pages, table with Swiss dates (DD.MM.YYYY), CET |
+| R Conferences | Single Page | 1 | Static HTML, `<li>` conference list parsing |
 
 ### Disabled Scrapers
 
 | Scraper | Reason |
 |---------|--------|
-| McGill | Imperva/Distil bot protection blocks headless browsers |
-| GMU | Trumba JS calendar widget doesn't render in headless Playwright |
+| Cambridge MRC | DNS resolution failure - site unreachable |
 
-### Files Created
-- `src/scrapers/academic/ucsf.py`
-- `src/scrapers/associations/asa_philadelphia.py`
-- `src/scrapers/associations/pbss.py`
-- `src/scrapers/organizations/statsupai.py`
-- `src/scrapers/organizations/realised.py`
-- `src/scrapers/academic/mcgill.py` (disabled)
-- `src/scrapers/academic/gmu.py` (disabled)
-
-### Files Modified
-- `src/scrapers/__init__.py` - Added 2 new registry entries (StatsUpAI, RealiseD)
-- `config/sources.yaml` - 3 sources enabled, 2 new sources added, 2 disabled with comments
+### Files Created (18 scrapers)
+- `src/scrapers/academic/ctml_berkeley.py`
+- `src/scrapers/academic/duke_margolis.py`
+- `src/scrapers/academic/cambridge_mrc.py` (disabled)
+- `src/scrapers/academic/dana_farber.py`
+- `src/scrapers/associations/asa_calendar.py`
+- `src/scrapers/associations/asa_boston.py`
+- `src/scrapers/associations/asa_georgia.py`
+- `src/scrapers/associations/asa_newjersey.py`
+- `src/scrapers/associations/asa_sandiego.py`
+- `src/scrapers/associations/icsa.py`
+- `src/scrapers/associations/nestat.py`
+- `src/scrapers/associations/enar.py`
+- `src/scrapers/associations/ibs.py`
+- `src/scrapers/associations/rss.py`
+- `src/scrapers/associations/washington_stat.py`
+- `src/scrapers/organizations/ispor.py`
+- `src/scrapers/organizations/basel_biometric.py`
+- `src/scrapers/tech/r_conferences.py`
 
 ### Technical Notes
-- **PBSS React SPA**: Must use `wait_until="domcontentloaded"` (never reaches `networkidle`). Page text renders on a single line without newlines - use section markers (Speakers:, Event Description, Registration) as delimiters instead of `\n`.
-- **RealiseD WordPress/Avada**: Links wrap images (empty text). Date extracted from Avada countdown widget's `data-timer` HTML attribute (format: `2026-02-03-17-00-00` in CET).
-- **StatsUpAI**: Events embedded in zoom registration links. Title found by searching backwards from date line in page text.
-- **Speaker extraction**: Remove parenthesized affiliations, split by semicolons AND commas, filter company names by suffix words (Therapeutics, Biosciences, etc.), remove degree suffixes.
+- **ASA Calendar ColdFusion**: Must click "Search Events" link then submit form (direct GET to search page redirects to main). Events are inline on results page with no detail pages. Year extracted from month section headers.
+- **Dana Farber**: Must use `domcontentloaded` (WordPress TEC never reaches `networkidle`).
+- **ISPOR**: Must filter to top-level conference URLs only (sub-pages like /about/registration share same path prefix).
+- **ICSA REST API**: Primary approach uses WordPress JSON API; page scraping as fallback.
+- **RSS UK times**: Convert "2.15PM" format to "2:15PM" before parsing. GMT timezone.
+- **Basel Biometric Swiss dates**: DD.MM.YYYY format converted to standard Month DD, YYYY. CET timezone.
 
-**Latest Run:** 102 total events, 37 within date range (15 enabled sources)
+**Latest Run:** 172 total events, 47 within date range (30 enabled sources)
 
 ---
 
@@ -106,27 +126,45 @@ Added 7 new scrapers to expand event coverage. 5 are working, 2 disabled due to 
 | Retry decorator | ✅ Complete | `src/utils/retry.py` |
 | Logging config | ✅ Complete | `src/utils/logging_config.py` |
 
-### Phase 3: Site-Specific Scrapers ✅ (15 of 33, 13 working)
+### Phase 3: Site-Specific Scrapers ✅ (33 of 33, 30 working)
 
 | Scraper | Status | Events Found | Notes |
 |---------|--------|--------------|-------|
 | Instats | ✅ Working | 20 | Bubble.io SPA - visits individual pages for accurate times |
-| FDA | ✅ Working | 11 (6 in range) | JSON API + page visits for times |
-| NISS | ✅ Working | 10 | List+detail pattern, collects URLs first |
+| FDA | ✅ Working | 7 | JSON API + page visits for times |
+| NISS | ✅ Working | 9 | List+detail pattern, collects URLs first |
 | DahShu | ✅ Working | 3 | Wild Apricot, deduplicates by event ID |
-| Harvard HSPH | ✅ Working | 3 | List+detail pattern, clean title/speaker extraction |
+| Harvard HSPH | ✅ Working | 5 | List+detail pattern, clean title/speaker extraction |
 | ASA Webinars | ✅ Working | 5 | Working as expected |
-| PSI | ✅ Working | 10 | List+detail with GMT time extraction |
-| Posit | ✅ Working | 5 (3 in range) | Fixed card selectors for new site design |
-| UCSF | ✅ Working | 1+ | Drupal list+detail, static HTML |
+| PSI | ✅ Working | 9 | List+detail with GMT time extraction |
+| Posit | ✅ Working | 6 | Fixed card selectors for new site design |
+| UCSF | ✅ Working | 1 | Drupal list+detail, static HTML |
 | ASA Philadelphia | ✅ Working | 15 | List+detail, speaker from H1, title from body |
-| StatsUpAI | ✅ Working | 3 | Single-page zoom link extraction (new source) |
-| RealiseD | ✅ Working | 4 | WordPress/Avada countdown timer dates (new source) |
-| PBSS | ✅ Working | 15 (3 in range) | React SPA, domcontentloaded, keyword-boundary parsing |
+| StatsUpAI | ✅ Working | 3 | Single-page zoom link extraction |
+| RealiseD | ✅ Working | 4 | WordPress/Avada countdown timer dates |
+| PBSS | ✅ Working | 15 | React SPA, domcontentloaded, keyword-boundary parsing |
+| CTML Berkeley | ✅ Working | 2 | Drupal/OpenBerkeley, date prefix in titles |
+| Duke-Margolis | ✅ Working | 4 | Drupal Views module, list+detail |
+| Dana Farber | ✅ Working | 1 | WordPress/TEC, domcontentloaded |
+| ASA Calendar | ✅ Working | 17 | ColdFusion form POST, click-through navigation |
+| ASA Boston | ✅ Working | 5 | Higher Logic/React SPA, rich text parsing |
+| ASA Georgia | ✅ Working | 1 | Squarespace, h3 + sibling text |
+| ASA New Jersey | ✅ Working | 2 | Basic static HTML |
+| ASA San Diego | ✅ Working | 1 | Higher Logic/React SPA |
+| ICSA | ✅ Working | 20 | WordPress REST API |
+| NESTAT | ✅ Working | 0 | Static HTML, low volume (no current events) |
+| ENAR | ✅ Working | 1 | Static ColdFusion |
+| IBS | ✅ Working | 0-2 | React SPA, intermittent rendering |
+| RSS | ✅ Working | 11 | ASP.NET WebForms, list+detail, GMT |
+| Washington Stat | ✅ Working | 1 | Static HTML |
+| ISPOR | ✅ Working | 2 | Sitefinity CMS, conference pages |
+| Basel Biometric | ✅ Working | 1 | Quarto/GitHub Pages, Swiss dates |
+| R Conferences | ✅ Working | 1 | Static HTML conference list |
 | McGill | ❌ Disabled | 0 | Imperva/Distil bot protection |
 | GMU | ❌ Disabled | 0 | Trumba JS widget doesn't render headless |
+| Cambridge MRC | ❌ Disabled | 0 | DNS resolution failure |
 
-**Latest Run Results:** 102 total events, 37 within date range
+**Latest Run Results:** 172 total events, 47 within date range (30 enabled sources)
 
 ### Phase 4: Output Generation ✅
 
@@ -338,39 +376,51 @@ Fixed extraneous text appearing in event output:
 
 ## Pending Tasks
 
-### Additional Scrapers (16 remaining)
+### All Scrapers Implemented ✅
 
-These scrapers are defined in `sources.yaml` but set to `enabled: false`:
+All 33 source scrapers have been implemented. 30 are working, 3 are disabled due to technical limitations.
 
-**Academic:**
-- [ ] CTML Berkeley
-- [ ] Duke-Margolis
-- [ ] Cambridge MRC
-- [ ] Dana Farber
+**Academic (8):** All implemented
+- [x] ~~CTML Berkeley~~ ✅ Implemented 2026-02-09
+- [x] ~~Duke-Margolis~~ ✅ Implemented 2026-02-09
+- [x] ~~Cambridge MRC~~ ❌ DNS failure - disabled
+- [x] ~~Dana Farber~~ ✅ Implemented 2026-02-09
 - [x] ~~UCSF~~ ✅ Implemented 2026-02-09
 - [x] ~~McGill~~ ❌ Bot protection - disabled
 - [x] ~~GMU~~ ❌ Trumba widget - disabled
+- [x] ~~Harvard HSPH~~ ✅
 
-**Associations:**
-- [ ] ASA Calendar
-- [ ] ASA Boston
-- [ ] ASA Georgia
-- [ ] ASA New Jersey
-- [ ] ASA San Diego
-- [ ] ICSA
-- [ ] NESTAT
-- [ ] ENAR
-- [ ] IBS
-- [ ] RSS
-- [ ] Washington Statistical Society
+**Associations (14):** All implemented
+- [x] ~~ASA Calendar~~ ✅ Implemented 2026-02-09
+- [x] ~~ASA Boston~~ ✅ Implemented 2026-02-09
+- [x] ~~ASA Georgia~~ ✅ Implemented 2026-02-09
+- [x] ~~ASA New Jersey~~ ✅ Implemented 2026-02-09
+- [x] ~~ASA San Diego~~ ✅ Implemented 2026-02-09
+- [x] ~~ICSA~~ ✅ Implemented 2026-02-09
+- [x] ~~NESTAT~~ ✅ Implemented 2026-02-09
+- [x] ~~ENAR~~ ✅ Implemented 2026-02-09
+- [x] ~~IBS~~ ✅ Implemented 2026-02-09
+- [x] ~~RSS~~ ✅ Implemented 2026-02-09
+- [x] ~~Washington Statistical Society~~ ✅ Implemented 2026-02-09
 - [x] ~~ASA Philadelphia~~ ✅ Implemented 2026-02-09
 - [x] ~~PBSS~~ ✅ Implemented 2026-02-09
+- [x] ~~ASA Webinars~~ ✅
 
-**Organizations:**
-- [ ] ISPOR
-- [ ] Basel Biometric
-- [x] ~~StatsUpAI~~ ✅ Implemented 2026-02-09 (new source)
-- [x] ~~RealiseD~~ ✅ Implemented 2026-02-09 (new source)
+**Organizations (6):** All implemented
+- [x] ~~ISPOR~~ ✅ Implemented 2026-02-09
+- [x] ~~Basel Biometric~~ ✅ Implemented 2026-02-09
+- [x] ~~StatsUpAI~~ ✅ Implemented 2026-02-09
+- [x] ~~RealiseD~~ ✅ Implemented 2026-02-09
+- [x] ~~NISS~~ ✅
+- [x] ~~DahShu~~ ✅
+- [x] ~~Instats~~ ✅
+
+**Tech (2):** All implemented
+- [x] ~~R Conferences~~ ✅ Implemented 2026-02-09
+- [x] ~~Posit~~ ✅
+
+**Government (1):** All implemented
+- [x] ~~FDA~~ ✅
 
 ### Enhancements
 
@@ -387,6 +437,7 @@ These scrapers are defined in `sources.yaml` but set to `enabled: false`:
 - [x] ~~Clean up extraneous text in output~~ ✅ Fixed 2026-01-14 (blocklists, pattern cleanup)
 - [x] ~~Redesign HTML template~~ ✅ Fixed 2026-01-14 (polished editorial design)
 - [x] ~~Add 7 new scrapers~~ ✅ Added 2026-02-09 (5 working, 2 disabled)
+- [x] ~~Add remaining 18 scrapers~~ ✅ Added 2026-02-09 (17 enabled, 1 disabled)
 
 ---
 
@@ -507,13 +558,13 @@ Edit `config/sources.yaml` and set `enabled: true/false` for each source.
 
 | Category | Count | Notes |
 |----------|-------|-------|
-| Python modules | 25 | Core application code (includes 7 new scrapers) |
+| Python modules | 43 | Core application code (includes all 33 scrapers) |
 | Config files | 2 | YAML configuration |
 | Templates | 2 | Jinja2 HTML templates (events.html.j2, export.html.j2) |
 | Scripts | 2 | Shell + Python |
 | Tests | 4 | pytest unit tests |
 | Documentation | 2 | plan.md, progress.md |
-| **Total files** | **37** | Excluding __init__.py |
+| **Total files** | **55** | Excluding __init__.py |
 
 ---
 

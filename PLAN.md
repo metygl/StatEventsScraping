@@ -93,11 +93,25 @@ StatEventsScraping/
 14. **McGill** - Disabled (bot protection) ❌
 15. **GMU** - Disabled (Trumba widget) ❌
 
-**Future additions (16 remaining)** - add iteratively using base patterns:
-- Academic: Duke-Margolis, Cambridge MRC, Dana Farber, CTML Berkeley
-- Associations: ASA chapters (4), ICSA, ENAR, IBS, RSS, NESTAT, Washington Stat
-- Organizations: ISPOR, Basel Biometric
-- Tech: R Conferences
+**Third wave (18 scrapers, 17 working):**
+16. **CTML Berkeley** - Drupal/OpenBerkeley, date prefix in titles ✅
+17. **Duke-Margolis** - Drupal Views, list+detail ✅
+18. **Dana Farber** - WordPress/TEC, domcontentloaded ✅
+19. **Cambridge MRC** - Disabled (DNS resolution failure) ❌
+20. **ASA Calendar** - ColdFusion form POST, click-through, inline results ✅
+21. **ASA Boston** - Higher Logic/React SPA, rich text parsing ✅
+22. **ASA Georgia** - Squarespace, h3 + sibling text ✅
+23. **ASA New Jersey** - Basic static HTML ✅
+24. **ASA San Diego** - Higher Logic/React SPA ✅
+25. **ICSA** - WordPress REST API ✅
+26. **NESTAT** - Static HTML, multi-page ✅
+27. **ENAR** - Static ColdFusion ✅
+28. **IBS** - React SPA (HigherLogic), intermittent ✅
+29. **RSS** - ASP.NET WebForms, list+detail, GMT ✅
+30. **Washington Stat** - Static HTML ✅
+31. **ISPOR** - Sitefinity CMS, conference pages ✅
+32. **Basel Biometric** - Quarto/GitHub Pages, Swiss dates ✅
+33. **R Conferences** - Static HTML conference list ✅
 
 ### Phase 4: Output Generation ✅
 9. Implement HTMLGenerator (`src/output/html_generator.py`)
@@ -148,7 +162,7 @@ StatEventsScraping/
 27. Vercel `/export` route for clean URL
 28. Unit tests for export functionality (15 tests)
 
-### Phase 10: Expanded Scrapers ✅ (NEW)
+### Phase 10: Expanded Scrapers ✅
 29. 7 new scrapers implemented (5 working, 2 disabled due to technical limitations)
     - **UCSF** - Drupal list+detail, static HTML
     - **ASA Philadelphia** - List+detail, speaker from H1, title from body text
@@ -159,6 +173,16 @@ StatEventsScraping/
     - **GMU** - Disabled (Trumba JS calendar widget doesn't render headless)
 30. Updated `src/scrapers/__init__.py` with 2 new registry entries
 31. Updated `config/sources.yaml` - 3 enabled, 2 new sources added, 2 disabled
+
+### Phase 11: Complete All Scrapers ✅ (NEW)
+32. 18 remaining scrapers implemented (17 enabled, 1 disabled)
+    - **Academic**: CTML Berkeley, Duke-Margolis, Dana Farber, Cambridge MRC (disabled - DNS)
+    - **Associations**: ASA Calendar, ASA Boston, ASA Georgia, ASA NJ, ASA SD, ICSA, NESTAT, ENAR, IBS, RSS, Washington Stat
+    - **Organizations**: ISPOR, Basel Biometric
+    - **Tech**: R Conferences
+33. All 33 source scrapers now implemented
+34. Updated `config/sources.yaml` - 30 sources enabled, 3 disabled
+35. Full run: 172 total events, 47 within date range
 
 ## Key Technical Decisions
 
@@ -233,8 +257,9 @@ date_range:
 |---------|-------|
 | McGill | Imperva/Distil bot protection blocks headless browsers |
 | GMU | Trumba JS calendar widget doesn't render in headless Playwright |
+| Cambridge MRC | DNS resolution failure - site unreachable |
 
-**Latest Run:** 102 total events, 37 within date range
+**Latest Run:** 172 total events, 47 within date range (30 enabled sources)
 
 ### Recently Fixed Scrapers
 
@@ -330,50 +355,50 @@ Polished editorial design with:
 
 ---
 
-## Source Sites (33 Total, 15 Enabled)
+## Source Sites (33 Total, 30 Enabled)
 
 ### Academic (8)
 - Harvard HSPH Epidemiology Seminar Series ✅
 - UCSF Department of Epidemiology & Biostatistics ✅
 - McGill Biostatistics Seminars ❌ (bot protection)
-- Duke-Margolis Events
-- Cambridge MRC Events
+- Duke-Margolis Events ✅
+- Cambridge MRC Events ❌ (DNS failure)
 - GMU Statistics Seminars ❌ (Trumba widget)
-- Dana Farber Data Science Events
-- CTML Berkeley
+- Dana Farber Data Science Events ✅
+- CTML Berkeley ✅
 
 ### Professional Associations (14)
 - ASA Webinars ✅
-- ASA Calendar of Events
-- ASA Boston Chapter
-- ASA Georgia Chapter
-- ASA New Jersey Chapter
-- ASA San Diego Chapter
+- ASA Calendar of Events ✅
+- ASA Boston Chapter ✅
+- ASA Georgia Chapter ✅
+- ASA New Jersey Chapter ✅
+- ASA San Diego Chapter ✅
 - ASA Philadelphia Chapter ✅
-- ICSA Events
+- ICSA Events ✅
 - PSI Events ✅
-- ENAR Webinar Series
-- IBS Meetings Calendar
-- RSS Events Calendar
-- New England Statistical Society
+- ENAR Webinar Series ✅
+- IBS Meetings Calendar ✅
+- RSS Events Calendar ✅
+- New England Statistical Society ✅
 - PBSS SF Bay ✅
 
 ### Organizations (8)
 - NISS-Merck Calendar ✅
 - DahShu Webinars ✅
 - Instats Seminars ✅
-- ISPOR Events
-- Basel Biometric Society
-- Washington Statistical Society
-- Stats-Up-AI-Alliance ✅ (new)
-- RealiseD Webinar Series ✅ (new)
+- ISPOR Events ✅
+- Basel Biometric Society ✅
+- Washington Statistical Society ✅
+- Stats-Up-AI-Alliance ✅
+- RealiseD Webinar Series ✅
 
 ### Government (1)
 - FDA Events ✅ (JSON API)
 
 ### Tech (2)
 - Posit Events ✅
-- R Conferences
+- R Conferences ✅
 
 ---
 
@@ -473,4 +498,4 @@ async def scrape(self):
 - [ ] Add RSS feed output
 - [ ] Add email/Slack notifications
 - [ ] Add web dashboard for monitoring
-- [ ] Implement remaining 16 scrapers
+- [x] ~~Implement remaining 16 scrapers~~ ✅ All 33 scrapers implemented

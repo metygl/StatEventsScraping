@@ -50,7 +50,7 @@ sources:
   - name: "CTML Berkeley"
     url: "https://ctml.berkeley.edu/"
     scraper: "academic.ctml_berkeley"
-    enabled: false
+    enabled: true
 
   - name: "McGill Biostatistics"
     url: "https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics"
@@ -65,12 +65,12 @@ sources:
   - name: "Duke-Margolis"
     url: "https://healthpolicy.duke.edu/events"
     scraper: "academic.duke_margolis"
-    enabled: false
+    enabled: true
 
   - name: "Cambridge MRC"
     url: "https://www.mrc-bsu.cam.ac.uk/events/"
     scraper: "academic.cambridge_mrc"
-    enabled: false
+    enabled: false  # DNS resolution failure - site unreachable
 
   - name: "GMU Statistics"
     url: "https://statistics.gmu.edu/about/events"
@@ -80,33 +80,33 @@ sources:
   - name: "Dana Farber"
     url: "https://ds.dfci.harvard.edu/events/"
     scraper: "academic.dana_farber"
-    enabled: false
+    enabled: true
 
   # Associations
   - name: "ASA Calendar"
     url: "https://ww2.amstat.org/dateline/index.cfm?fuseaction=main"
     scraper: "associations.asa_calendar"
-    enabled: false
+    enabled: true
 
   - name: "ASA Boston"
     url: "https://community.amstat.org/bostonchapter/upcoming-events/upcoming-events"
     scraper: "associations.asa_boston"
-    enabled: false
+    enabled: true
 
   - name: "ASA Georgia"
     url: "https://www.amstatgeorgia.org/events"
     scraper: "associations.asa_georgia"
-    enabled: false
+    enabled: true
 
   - name: "ASA New Jersey"
     url: "http://asanjchapter.org/"
     scraper: "associations.asa_newjersey"
-    enabled: false
+    enabled: true
 
   - name: "ASA San Diego"
     url: "https://community.amstat.org/sdasa/home"
     scraper: "associations.asa_sandiego"
-    enabled: false
+    enabled: true
 
   - name: "ASA Philadelphia"
     url: "https://community.amstat.org/philadelphia/webinar"
@@ -116,27 +116,27 @@ sources:
   - name: "ICSA"
     url: "https://www.icsa.org/category/events/"
     scraper: "associations.icsa"
-    enabled: false
+    enabled: true
 
   - name: "New England Statistical Society"
     url: "https://nestat.org/"
     scraper: "associations.nestat"
-    enabled: false
+    enabled: true
 
   - name: "ENAR"
     url: "https://www.enar.org/education/"
     scraper: "associations.enar"
-    enabled: false
+    enabled: true
 
   - name: "IBS"
     url: "https://www.biometricsociety.org/meetings/events"
     scraper: "associations.ibs"
-    enabled: false
+    enabled: true
 
   - name: "RSS"
     url: "https://rss.org.uk/training-events/events/"
     scraper: "associations.rss"
-    enabled: false
+    enabled: true
 
   - name: "PBSS SF Bay"
     url: "https://www.pbss.org/chapter/SF-Bay"
@@ -146,18 +146,18 @@ sources:
   - name: "Washington Statistical Society"
     url: "https://washstat.org/"
     scraper: "associations.washington_stat"
-    enabled: false
+    enabled: true
 
   # Organizations
   - name: "ISPOR"
     url: "https://www.ispor.org/conferences-education/conferences/upcoming-conferences"
     scraper: "organizations.ispor"
-    enabled: false
+    enabled: true
 
   - name: "Basel Biometric Society"
-    url: "https://baselbiometrics.github.io/home/docs/"
+    url: "https://baselbiometrics.github.io/home/docs/events_upcoming.html"
     scraper: "organizations.basel_biometric"
-    enabled: false
+    enabled: true
 
   - name: "Stats-Up-AI-Alliance"
     url: "https://statsupai.org/events/webinars/"
@@ -173,4 +173,4 @@ sources:
   - name: "R Conferences"
     url: "https://www.r-project.org/conferences/"
     scraper: "tech.r_conferences"
-    enabled: false
+    enabled: true
