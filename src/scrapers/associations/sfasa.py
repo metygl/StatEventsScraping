@@ -108,6 +108,10 @@ class SFASAScraper(BaseScraper):
             self.logger.debug(f"Could not parse date '{date_text}': {e}")
             return None
 
+        # Correct year if URL or title contains a different year than parsed date
+        # (handles typos like "February 22nd, 2025" on a page titled "2026 Annual...")
+        start_dt, end_dt = self._correct_year(start_dt, end_dt, url, body_text)
+
         # Extract title
         title = self._extract_title(body_text, data.get("link_title", ""))
         if not title:
@@ -137,6 +141,31 @@ class SFASAScraper(BaseScraper):
             cost=cost,
             raw_date_text=date_text,
         )
+
+    def _correct_year(self, start_dt, end_dt, url: str, body_text: str):
+        """Correct year if URL or page title contains a different year.
+
+        Handles cases where the page text has a typo (e.g. "2025" instead of
+        "2026") but the URL slug or page heading contains the correct year.
+        """
+        # Look for a 4-digit year in the URL slug (e.g. /2026-annual-event)
+        url_year_match = re.search(r"/(\d{4})-", url)
+        if not url_year_match:
+            return start_dt, end_dt
+
+        url_year = int(url_year_match.group(1))
+        if url_year == start_dt.year:
+            return start_dt, end_dt
+
+        # Also check first line of body text for the same year
+        first_line = body_text.split("\n")[0] if body_text else ""
+        if str(url_year) in first_line:
+            # URL year matches title — correct the parsed date
+            start_dt = start_dt.replace(year=url_year)
+            if end_dt:
+                end_dt = end_dt.replace(year=url_year)
+
+        return start_dt, end_dt
 
     def _extract_date(self, text: str) -> Optional[str]:
         """Extract date and time from page text.
