@@ -35,6 +35,9 @@ class DateParser:
         "BST": "Europe/London",
         "CET": "Europe/Paris",
         "CEST": "Europe/Paris",
+        "AKST": "US/Alaska",
+        "AKDT": "US/Alaska",
+        "AKT": "US/Alaska",
     }
 
     # Month name mappings
@@ -72,6 +75,9 @@ class DateParser:
         "CET": pytz.timezone("Europe/Paris"),
         "CEST": pytz.timezone("Europe/Paris"),
         "BST": pytz.timezone("Europe/London"),
+        "AKST": pytz.timezone("US/Alaska"),
+        "AKDT": pytz.timezone("US/Alaska"),
+        "AKT": pytz.timezone("US/Alaska"),
     }
 
     @classmethod

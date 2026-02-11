@@ -6,9 +6,70 @@
 
 ---
 
-## Recent Update: Source Status Page (Phase 13)
+## Recent Update: ASA Chapter Expansion (Phase 14)
 
-Added a `/status` page showing scraping health for all 33 event sources with green/red/disabled indicators, event counts, and error messages.
+Added 35 new ASA chapter scrapers, bringing total sources from 33 to 70 (67 enabled, 3 disabled).
+
+### Generic Higher Logic Scraper
+- Created `ASACommunityGenericScraper` base class in `src/scrapers/associations/asa_community.py`
+- Consolidates patterns from ASA Indiana/San Diego/Boston scrapers
+- `domcontentloaded` + `asyncio.sleep(5)` for React SPA loading
+- Multi-strategy date extraction: labeled (Date:/When:), day-name anchored, standalone
+- Noon/Midnight normalization, configurable timezone per chapter
+- **30 lightweight subclasses** (~4 lines each) for all Higher Logic community chapters
+
+### 30 Higher Logic Chapter Subclasses
+
+| Chapter | Timezone | Chapter | Timezone |
+|---------|----------|---------|----------|
+| ASA NYC Metro | ET | ASA Oregon | PT |
+| ASA Chicago | CT | ASA Utah | MT |
+| ASA North Carolina | ET | ASA South Florida | ET |
+| ASA Florida | ET | ASA Nebraska | CT |
+| ASA Houston Area | CT | ASA Princeton-Trenton | ET |
+| ASA Colorado-Wyoming | MT | ASA Albany | ET |
+| ASA Wisconsin | CT | ASA Alaska | AKST |
+| ASA Alabama-Mississippi | CT | ASA Central Arkansas | CT |
+| ASA Kansas/Western Missouri | CT | ASA Mid-Tennessee | CT |
+| ASA Rochester | ET | ASA Southern California | PT |
+| ASA Iowa | CT | ASA Orange County/Long Beach | PT |
+| ASA Mid-Missouri | CT | ASA Delaware | ET |
+| ASA St. Louis | CT | ASA Austin | CT |
+| ASA Connecticut | ET | ASA San Antonio | CT |
+| ASA Kentucky | ET | ASA Western Tennessee | CT |
+
+### 5 Standalone Site Scrapers
+
+| Scraper | Platform | Status |
+|---------|----------|--------|
+| ASA North Texas | Google Sites | ✅ Working |
+| ASA Pittsburgh | WordPress | ✅ Working (4 events found) |
+| ASA Twin Cities | Hugo static | ❌ Disabled (site unreachable) |
+| ASA Cleveland | Google Sites | ✅ Working |
+| ASA Columbus | Google Sites | ✅ Working |
+
+### Other Changes
+- Added AKST/AKDT/AKT timezone support in `src/parsers/date_parser.py`
+- Registry expanded to 70 entries in `src/scrapers/__init__.py`
+- `config/sources.yaml` expanded to 70 sources
+
+### Verification Results
+
+| Scraper | Events Found |
+|---------|-------------|
+| ASA Alaska | 1 (AKST timezone works) |
+| ASA Connecticut | 2 |
+| ASA North Carolina | 3 |
+| ASA Pittsburgh | 4 |
+| ASA Chicago, Florida, NYC Metro, Cleveland, Columbus, So. Cal | 0 (no current events) |
+
+**Current Totals:** 70 sources, 67 enabled, 3 disabled (McGill, Cambridge MRC, ASA Twin Cities)
+
+---
+
+## Previous Update: Source Status Page (Phase 13)
+
+Added a `/status` page showing scraping health for all event sources with green/red/disabled indicators, event counts, and error messages.
 
 ### Changes
 - **`src/main.py`** — Loads all sources (including disabled), tracks per-source results (status, total events, in-range events, error messages), passes data to status page generator
@@ -172,7 +233,7 @@ Added 18 new scrapers completing all remaining sources. 17 enabled, 1 disabled (
 | Retry decorator | ✅ Complete | `src/utils/retry.py` |
 | Logging config | ✅ Complete | `src/utils/logging_config.py` |
 
-### Phase 3: Site-Specific Scrapers ✅ (33 of 33, 30 working)
+### Phase 3: Site-Specific Scrapers ✅ (70 total, 67 enabled)
 
 | Scraper | Status | Events Found | Notes |
 |---------|--------|--------------|-------|
@@ -209,8 +270,14 @@ Added 18 new scrapers completing all remaining sources. 17 enabled, 1 disabled (
 | McGill | ❌ Disabled | 0 | Imperva/Distil bot protection |
 | GMU | ✅ Working | 14 (3 in range) | 25Live JSON API, bypasses Trumba JS widget |
 | Cambridge MRC | ❌ Disabled | 0 | DNS resolution failure |
+| ASA Twin Cities | ❌ Disabled | 0 | Site unreachable (timeout) |
+| **ASA Community chapters** | ✅ Working | varies | 30 Higher Logic subclasses |
+| ASA North Texas | ✅ Working | 0 | Google Sites |
+| ASA Pittsburgh | ✅ Working | 4 | WordPress blog |
+| ASA Cleveland | ✅ Working | 0 | Google Sites |
+| ASA Columbus | ✅ Working | 0 | Google Sites |
 
-**Latest Run Results:** 31 enabled sources (previously 30)
+**Latest Run Results:** 67 enabled sources, 3 disabled
 
 ### Phase 4: Output Generation ✅
 
@@ -424,7 +491,7 @@ Fixed extraneous text appearing in event output:
 
 ### All Scrapers Implemented ✅
 
-All 33 source scrapers have been implemented. 30 are working, 3 are disabled due to technical limitations.
+All 70 source scrapers have been implemented. 67 are enabled, 3 are disabled due to technical limitations.
 
 **Academic (8):** All implemented
 - [x] ~~CTML Berkeley~~ ✅ Implemented 2026-02-09
@@ -484,6 +551,7 @@ All 33 source scrapers have been implemented. 30 are working, 3 are disabled due
 - [x] ~~Redesign HTML template~~ ✅ Fixed 2026-01-14 (polished editorial design)
 - [x] ~~Add 7 new scrapers~~ ✅ Added 2026-02-09 (5 working, 2 disabled)
 - [x] ~~Add remaining 18 scrapers~~ ✅ Added 2026-02-09 (17 enabled, 1 disabled)
+- [x] ~~Add ASA chapter scrapers~~ ✅ Added 2026-02-10 (35 new, 34 enabled, 1 disabled)
 
 ---
 
@@ -604,7 +672,7 @@ Edit `config/sources.yaml` and set `enabled: true/false` for each source.
 
 | Category | Count | Notes |
 |----------|-------|-------|
-| Python modules | 43 | Core application code (includes all 33 scrapers) |
+| Python modules | 49 | Core application code (includes all 70 scrapers) |
 | Config files | 2 | YAML configuration |
 | Templates | 3 | Jinja2 HTML templates (events.html.j2, export.html.j2, status.html.j2) |
 | Scripts | 2 | Shell + Python |

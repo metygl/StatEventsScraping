@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Python + Playwright system to scrape 31 statistics/biostatistics event sources, filter by date range, and generate a static HTML page for local viewing. Supports both manual and automatic (cron) execution.
+A Python + Playwright system to scrape 70 statistics/biostatistics event sources, filter by date range, and generate a static HTML page for local viewing. Supports both manual and automatic (cron) execution.
 
 ## Project Structure
 
@@ -10,7 +10,7 @@ A Python + Playwright system to scrape 31 statistics/biostatistics event sources
 StatEventsScraping/
 ├── config/
 │   ├── settings.yaml         # Date range, browser, output settings
-│   └── sources.yaml          # Site definitions (31 sources)
+│   └── sources.yaml          # Site definitions (70 sources)
 ├── src/
 │   ├── main.py               # Entry point and orchestration
 │   ├── core/
@@ -258,6 +258,7 @@ date_range:
 |---------|-------|
 | McGill | Imperva/Distil bot protection blocks headless browsers |
 | Cambridge MRC | DNS resolution failure - site unreachable |
+| ASA Twin Cities | Site unreachable (timeout on amstatmn.org) |
 
 ### Recently Fixed Scrapers
 
@@ -266,7 +267,7 @@ date_range:
 - **Solution:** Discovered 25Live/CollegeNET JSON API at `https://25livepub.collegenet.com/calendars/cec-statistics.json`
 - **Result:** 14 events found (3 within date range), output matches expected format
 
-**Latest Run:** 31 enabled sources, 2 disabled
+**Latest Run:** 67 enabled sources, 3 disabled
 
 ### Recently Fixed Scrapers
 
@@ -362,7 +363,7 @@ Polished editorial design with:
 
 ---
 
-## Source Sites (33 Total, 31 Enabled)
+## Source Sites (70 Total, 67 Enabled)
 
 ### Academic (8)
 - Harvard HSPH Epidemiology Seminar Series ✅
@@ -374,7 +375,7 @@ Polished editorial design with:
 - Dana Farber Data Science Events ✅
 - CTML Berkeley ✅
 
-### Professional Associations (14)
+### Professional Associations (49)
 - ASA Webinars ✅
 - ASA Calendar of Events ✅
 - ASA Boston Chapter ✅
@@ -382,6 +383,8 @@ Polished editorial design with:
 - ASA New Jersey Chapter ✅
 - ASA San Diego Chapter ✅
 - ASA Philadelphia Chapter ✅
+- ASA Central Indiana ✅
+- SFASA ✅
 - ICSA Events ✅
 - PSI Events ✅
 - ENAR Webinar Series ✅
@@ -389,6 +392,22 @@ Polished editorial design with:
 - RSS Events Calendar ✅
 - New England Statistical Society ✅
 - PBSS SF Bay ✅
+- **ASA Community (Higher Logic) chapters (30):**
+  - ASA NYC Metro ✅, ASA Chicago ✅, ASA North Carolina ✅, ASA Florida ✅
+  - ASA Houston Area ✅, ASA Colorado-Wyoming ✅, ASA Wisconsin ✅
+  - ASA Alabama-Mississippi ✅, ASA Kansas/Western Missouri ✅, ASA Rochester ✅
+  - ASA Iowa ✅, ASA Mid-Missouri ✅, ASA St. Louis ✅, ASA Connecticut ✅
+  - ASA Kentucky ✅, ASA Austin ✅, ASA San Antonio ✅, ASA Western Tennessee ✅
+  - ASA Oregon ✅, ASA Utah ✅, ASA South Florida ✅, ASA Nebraska ✅
+  - ASA Princeton-Trenton ✅, ASA Albany ✅, ASA Alaska ✅, ASA Central Arkansas ✅
+  - ASA Mid-Tennessee ✅, ASA Southern California ✅, ASA Orange County/Long Beach ✅
+  - ASA Delaware ✅
+- **ASA standalone site chapters (5):**
+  - ASA North Texas ✅ (Google Sites)
+  - ASA Pittsburgh ✅ (WordPress)
+  - ASA Twin Cities ❌ (Hugo - site unreachable)
+  - ASA Cleveland ✅ (Google Sites)
+  - ASA Columbus ✅ (Google Sites)
 
 ### Organizations (8)
 - NISS-Merck Calendar ✅
@@ -474,7 +493,7 @@ async def scrape(self):
         # Visit each detail page
         event = await self._scrape_event_page(data)
 ```
-**Used by:** PBSS ✅
+**Used by:** PBSS ✅, ASA Community chapters (30 Higher Logic subclasses)
 
 **Key insights for React SPAs:**
 - Must use `domcontentloaded` not `networkidle` (React SPAs never reach idle)
@@ -499,6 +518,22 @@ async def scrape(self):
     - Updated timestamp moved to its own line
 40. Vercel `/status` route for clean URL
 
+### Phase 14: ASA Chapter Expansion ✅ (NEW)
+41. Generic Higher Logic scraper (`src/scrapers/associations/asa_community.py`)
+    - `ASACommunityGenericScraper` base class consolidating patterns from ASA Indiana/San Diego/Boston
+    - `domcontentloaded` + `asyncio.sleep(5)` for React SPA loading
+    - Multi-strategy date extraction: labeled (Date:/When:), day-name anchored, standalone
+    - Noon/Midnight normalization, timezone injection, speaker/location/cost/URL extraction
+    - 30 lightweight subclasses (~4 lines each) for all Higher Logic chapters
+42. 5 standalone site scrapers
+    - ASA North Texas (Google Sites)
+    - ASA Pittsburgh (WordPress blog)
+    - ASA Twin Cities (Hugo static - disabled, site unreachable)
+    - ASA Cleveland (Google Sites)
+    - ASA Columbus (Google Sites)
+43. AKST/AKDT/AKT timezone support in DateParser
+44. Registry expanded to 70 entries, sources.yaml to 70 sources (67 enabled, 3 disabled)
+
 ## Future Improvements
 
 ### High Priority
@@ -522,3 +557,4 @@ async def scrape(self):
 - [ ] Add email/Slack notifications
 - [ ] Add web dashboard for monitoring
 - [x] ~~Implement remaining 16 scrapers~~ ✅ All 33 scrapers implemented
+- [x] ~~Add ASA chapter scrapers~~ ✅ 35 new ASA chapter scrapers (70 total sources)

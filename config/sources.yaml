@@ -169,6 +169,195 @@ sources:
     scraper: "organizations.realised"
     enabled: true
 
+  - name: "SFASA"
+    url: "https://sites.google.com/view/sfasa-org/events"
+    scraper: "associations.sfasa"
+    enabled: true
+
+  - name: "ASA Central Indiana"
+    url: "https://community.amstat.org/asacentralindiana/home"
+    scraper: "associations.asa_indiana"
+    enabled: true
+
+  # ========== ASA Community (Higher Logic) Chapters ==========
+
+  - name: "ASA NYC Metro"
+    url: "https://community.amstat.org/nycchapter/home"
+    scraper: "associations.asa_nycmetro"
+    enabled: true
+
+  - name: "ASA Chicago"
+    url: "https://community.amstat.org/chicagochapter/home"
+    scraper: "associations.asa_chicago"
+    enabled: true
+
+  - name: "ASA North Carolina"
+    url: "https://community.amstat.org/northcarolina/home"
+    scraper: "associations.asa_northcarolina"
+    enabled: true
+
+  - name: "ASA Florida"
+    url: "https://community.amstat.org/floridachapter/home"
+    scraper: "associations.asa_florida"
+    enabled: true
+
+  - name: "ASA Houston Area"
+    url: "https://community.amstat.org/Houston/home"
+    scraper: "associations.asa_houston"
+    enabled: true
+
+  - name: "ASA Colorado-Wyoming"
+    url: "https://community.amstat.org/cwc/home"
+    scraper: "associations.asa_coloradowyoming"
+    enabled: true
+
+  - name: "ASA Wisconsin"
+    url: "https://community.amstat.org/wisconsinchapter/home"
+    scraper: "associations.asa_wisconsin"
+    enabled: true
+
+  - name: "ASA Alabama-Mississippi"
+    url: "https://community.amstat.org/alabamachapter/home"
+    scraper: "associations.asa_alabamamississippi"
+    enabled: true
+
+  - name: "ASA Kansas/Western Missouri"
+    url: "https://community.amstat.org/KWMChapter/home"
+    scraper: "associations.asa_kansaswesternmo"
+    enabled: true
+
+  - name: "ASA Rochester"
+    url: "https://community.amstat.org/Rochester/home"
+    scraper: "associations.asa_rochester"
+    enabled: true
+
+  - name: "ASA Iowa"
+    url: "https://community.amstat.org/iowachapter/home"
+    scraper: "associations.asa_iowa"
+    enabled: true
+
+  - name: "ASA Mid-Missouri"
+    url: "https://community.amstat.org/midmissouri/home"
+    scraper: "associations.asa_midmissouri"
+    enabled: true
+
+  - name: "ASA St. Louis"
+    url: "https://community.amstat.org/stlouischapter/home"
+    scraper: "associations.asa_stlouis"
+    enabled: true
+
+  - name: "ASA Connecticut"
+    url: "https://community.amstat.org/connecticutchapter/home"
+    scraper: "associations.asa_connecticut"
+    enabled: true
+
+  - name: "ASA Kentucky"
+    url: "https://community.amstat.org/kentucky/home"
+    scraper: "associations.asa_kentucky"
+    enabled: true
+
+  - name: "ASA Austin"
+    url: "https://community.amstat.org/austinchapter/home"
+    scraper: "associations.asa_austin"
+    enabled: true
+
+  - name: "ASA San Antonio"
+    url: "https://community.amstat.org/sanantoniochapter/home"
+    scraper: "associations.asa_sanantonio"
+    enabled: true
+
+  - name: "ASA Western Tennessee"
+    url: "https://community.amstat.org/westerntennesseechapter/home"
+    scraper: "associations.asa_westerntn"
+    enabled: true
+
+  - name: "ASA Oregon"
+    url: "https://community.amstat.org/oregon/home"
+    scraper: "associations.asa_oregon"
+    enabled: true
+
+  - name: "ASA Utah"
+    url: "https://community.amstat.org/utahchapter/home"
+    scraper: "associations.asa_utah"
+    enabled: true
+
+  - name: "ASA South Florida"
+    url: "https://community.amstat.org/southflorida/home"
+    scraper: "associations.asa_southflorida"
+    enabled: true
+
+  - name: "ASA Nebraska"
+    url: "https://community.amstat.org/amstatnebraska/home"
+    scraper: "associations.asa_nebraska"
+    enabled: true
+
+  - name: "ASA Princeton-Trenton"
+    url: "https://community.amstat.org/princetontrenton/home"
+    scraper: "associations.asa_princetontrenton"
+    enabled: true
+
+  - name: "ASA Albany"
+    url: "https://community.amstat.org/ac/home"
+    scraper: "associations.asa_albany"
+    enabled: true
+
+  - name: "ASA Alaska"
+    url: "https://community.amstat.org/AlaskaChapter/home"
+    scraper: "associations.asa_alaska"
+    enabled: true
+
+  - name: "ASA Central Arkansas"
+    url: "https://community.amstat.org/crc/home"
+    scraper: "associations.asa_centralarkansas"
+    enabled: true
+
+  - name: "ASA Mid-Tennessee"
+    url: "https://community.amstat.org/midtennesseechapter/home"
+    scraper: "associations.asa_midtennessee"
+    enabled: true
+
+  - name: "ASA Southern California"
+    url: "https://community.amstat.org/SCASA/home"
+    scraper: "associations.asa_southerncalifornia"
+    enabled: true
+
+  - name: "ASA Orange County/Long Beach"
+    url: "https://community.amstat.org/OCLB/home"
+    scraper: "associations.asa_orangecountylb"
+    enabled: true
+
+  - name: "ASA Delaware"
+    url: "https://community.amstat.org/delawarechapter/home"
+    scraper: "associations.asa_delaware"
+    enabled: true
+
+  # ========== ASA Standalone Site Chapters ==========
+
+  - name: "ASA North Texas"
+    url: "https://www.amstat-nt.org/"
+    scraper: "associations.asa_northtexas"
+    enabled: true
+
+  - name: "ASA Pittsburgh"
+    url: "https://amstatpgh.com/"
+    scraper: "associations.asa_pittsburgh"
+    enabled: true
+
+  - name: "ASA Twin Cities"
+    url: "https://amstatmn.org/"
+    scraper: "associations.asa_twincities"
+    enabled: false  # Site unreachable (timeout)
+
+  - name: "ASA Cleveland"
+    url: "https://sites.google.com/view/cleveland-asa"
+    scraper: "associations.asa_cleveland"
+    enabled: true
+
+  - name: "ASA Columbus"
+    url: "https://sites.google.com/view/cbus-asa"
+    scraper: "associations.asa_columbus"
+    enabled: true
+
   # Tech
   - name: "R Conferences"
     url: "https://www.r-project.org/conferences/"
