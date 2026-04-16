@@ -110,7 +110,7 @@ class PositScraper(BaseScraper):
         elif "in-person" in description.lower():
             location_type = LocationType.IN_PERSON
         elif "hangout" in event_type.lower():
-            location_type = LocationType.VIRTUAL
+            return None
 
         # Determine source name based on event type
         if event_type:

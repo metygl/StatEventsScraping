@@ -5,8 +5,10 @@ Uses Wild Apricot platform for event management.
 """
 
 import re
+from datetime import datetime
 from typing import List, Optional
 import asyncio
+import pytz
 
 from src.scrapers.base import BaseScraper
 from src.models.event import Event, LocationType
@@ -125,6 +127,13 @@ class DahShuScraper(BaseScraper):
             start_dt, end_dt = DateParser.parse_datetime_range(full_date_text)
         except Exception as e:
             self.logger.debug(f"Could not parse date '{full_date_text}': {e}")
+            return None
+
+        # Skip past events - only include events from today onward
+        pst = pytz.timezone("America/Los_Angeles")
+        now = datetime.now(pst)
+        if start_dt < now:
+            self.logger.debug(f"Skipping past DahShu event: {title} ({start_dt})")
             return None
 
         # Get speakers from title or page

@@ -631,9 +631,8 @@
             });
         }
 
-        // Format a single event matching ExampleOutput.txt exactly
-        function formatEvent(event) {
-            // Format: SOURCE: Title (Speakers)
+        // Format a single event as plain text
+        function formatEventText(event) {
             let speakersStr = '';
             if (event.speakers && event.speakers.length > 0) {
                 speakersStr = ' (' + event.speakers.join(', ') + ')';
@@ -641,23 +640,54 @@
 
             const lines = [
                 '\t\u2022\t' + event.source + ': ' + event.title + speakersStr,
-                event.url,
-                event.date_range + ', ' + event.location + ' (' + event.cost + ')'
+                '\t\t' + event.url,
+                '\t\t' + event.date_range + ', ' + event.location + ' (' + event.cost + ')'
             ];
 
             return lines.join('\n');
         }
 
-        // Generate full export text
+        // Format a single event as HTML with blue links
+        function formatEventHTML(event) {
+            let speakersStr = '';
+            if (event.speakers && event.speakers.length > 0) {
+                speakersStr = ' (' + event.speakers.join(', ') + ')';
+            }
+
+            const titleLine = '&nbsp;&nbsp;&nbsp;&nbsp;\u2022&nbsp;&nbsp;&nbsp;' +
+                event.source + ': ' + event.title + speakersStr;
+            const urlLine = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="' +
+                event.url + '" style="color: #0563C1; text-decoration: underline;">' +
+                event.url + '</a>';
+            const dateLine = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                event.date_range + ', ' + event.location + ' (' + event.cost + ')';
+
+            return titleLine + '<br>' + urlLine + '<br>' + dateLine;
+        }
+
+        // Generate plain text export
         function generateExportText() {
             const selected = getSelectedIndices();
             const selectedEvents = selected.map(i => eventsData[i]);
 
             const header = 'For your information, here are a few additional upcoming events that will be held in the next {{ time_period }} which could be of interest to you.';
 
-            const eventTexts = selectedEvents.map(formatEvent);
+            const eventTexts = selectedEvents.map(formatEventText);
 
             return header + '\n \n' + eventTexts.join('\n \n');
+        }
+
+        // Generate HTML export with blue links
+        function generateExportHTML() {
+            const selected = getSelectedIndices();
+            const selectedEvents = selected.map(i => eventsData[i]);
+
+            const header = '<p>For your information, here are a few additional upcoming events that will be held in the next {{ time_period }} which could be of interest to you.</p>';
+
+            const eventHTMLs = selectedEvents.map(formatEventHTML);
+
+            return '<div style="font-family: Calibri, Arial, sans-serif; font-size: 11pt;">' +
+                header + '<br>' + eventHTMLs.join('<br><br>') + '</div>';
         }
 
         // Event handlers
@@ -705,9 +735,17 @@
         });
 
         copyBtn.addEventListener('click', async function() {
+            const html = generateExportHTML();
             const text = generateExportText();
             try {
-                await navigator.clipboard.writeText(text);
+                const htmlBlob = new Blob([html], { type: 'text/html' });
+                const textBlob = new Blob([text], { type: 'text/plain' });
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/html': htmlBlob,
+                        'text/plain': textBlob,
+                    })
+                ]);
                 // Visual feedback
                 const originalText = copyBtn.textContent;
                 copyBtn.textContent = 'Copied!';

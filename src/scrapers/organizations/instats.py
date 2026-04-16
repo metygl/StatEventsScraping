@@ -36,7 +36,7 @@ class InstatsScraper(BaseScraper):
         for title, url, raw_date, speakers, cost in event_info[:20]:  # Limit to 20
             try:
                 event = await self._scrape_event_page(title, url, raw_date, speakers, cost)
-                if event:
+                if event and event.cost.lower() == "free":
                     self.events.append(event)
             except Exception as e:
                 self.logger.warning(f"Failed to scrape {url}: {e}")

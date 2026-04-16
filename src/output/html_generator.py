@@ -3,6 +3,7 @@ Static HTML and text output generation from scraped events.
 """
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
@@ -280,6 +281,125 @@ class HTMLGenerator:
         output_file.write_text(html_content, encoding="utf-8")
 
         return str(output_file)
+
+    def generate_feedback_page(self, output_path: str) -> str:
+        """
+        Generate feedback form page.
+
+        Args:
+            output_path: Path to write HTML file
+
+        Returns:
+            Path to generated file
+        """
+        pst = pytz.timezone("America/Los_Angeles")
+        context = {
+            "generated_at": datetime.now(pst).strftime("%Y-%m-%d %H:%M:%S PST"),
+        }
+
+        template = self.env.get_template("feedback.html.j2")
+        html_content = template.render(**context)
+
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text(html_content, encoding="utf-8")
+
+        return str(output_file)
+
+    def generate_changelog_page(
+        self, output_path: str, patch_md_path: str = None
+    ) -> str:
+        """
+        Generate changelog page from PATCH.md.
+
+        Args:
+            output_path: Path to write HTML file
+            patch_md_path: Path to PATCH.md file
+
+        Returns:
+            Path to generated file
+        """
+        if patch_md_path is None:
+            patch_md_path = Path(__file__).parent.parent.parent / "PATCH.md"
+
+        versions = self._parse_patch_md(Path(patch_md_path))
+
+        pst = pytz.timezone("America/Los_Angeles")
+        context = {
+            "versions": versions,
+            "generated_at": datetime.now(pst).strftime("%Y-%m-%d %H:%M:%S PST"),
+        }
+
+        template = self.env.get_template("changelog.html.j2")
+        html_content = template.render(**context)
+
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_text(html_content, encoding="utf-8")
+
+        return str(output_file)
+
+    @staticmethod
+    def _parse_patch_md(patch_path: Path) -> List[Dict]:
+        """
+        Parse PATCH.md into structured version data.
+
+        Returns list of versions, each with tag, date, and categories.
+        """
+        if not patch_path.exists():
+            return []
+
+        content = patch_path.read_text(encoding="utf-8")
+        versions = []
+        current_version = None
+        current_category = None
+
+        for line in content.split("\n"):
+            line = line.rstrip()
+
+            # Version header: ## v1.5.0 — 2026-04-16
+            version_match = re.match(
+                r"^## (v[\d.]+)\s*(?:[—–-]\s*(.+))?$", line
+            )
+            if version_match:
+                current_version = {
+                    "tag": version_match.group(1),
+                    "date": (version_match.group(2) or "").strip(),
+                    "categories": [],
+                }
+                versions.append(current_version)
+                current_category = None
+                continue
+
+            if current_version is None:
+                continue
+
+            # Category header: ### New: Feature Name  or  ### Changed: ...
+            category_match = re.match(r"^### (.+)$", line)
+            if category_match:
+                current_category = {
+                    "name": category_match.group(1).strip(),
+                    "entries": [],
+                }
+                current_version["categories"].append(current_category)
+                continue
+
+            # List item: - Some change description
+            item_match = re.match(r"^- \*\*(.+?)\*\*[:\s]*(.*)$", line)
+            if item_match and current_category is not None:
+                current_category["entries"].append(
+                    f"<strong>{item_match.group(1)}</strong>: {item_match.group(2)}"
+                    if item_match.group(2)
+                    else f"<strong>{item_match.group(1)}</strong>"
+                )
+                continue
+
+            item_match = re.match(r"^- (.+)$", line)
+            if item_match and current_category is not None:
+                current_category["entries"].append(item_match.group(1))
+                continue
+
+        return versions
 
     def _group_by_date(self, events: List[Event]) -> Dict[str, List[Event]]:
         """Group events by date for organized display."""

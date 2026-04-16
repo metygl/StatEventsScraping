@@ -12,9 +12,11 @@ from typing import List, Dict, Any
 import yaml
 import pytz
 
+import re
+
 from src.core.browser import BrowserManager
 from src.core.exceptions import ScraperException
-from src.models.event import Event
+from src.models.event import Event, LocationType
 from src.parsers.date_parser import DateParser
 from src.output.html_generator import HTMLGenerator
 from src.utils.logging_config import setup_logging
@@ -123,6 +125,12 @@ class EventScraperApp:
                 e
                 for e in self.events
                 if e.is_within_date_range(date_range[0], date_range[1])
+            ]
+
+            # Filter out in-person international conferences
+            filtered_events = [
+                e for e in filtered_events
+                if not self._is_inperson_international_conference(e)
             ]
 
             # Build per-source results for status page
@@ -237,6 +245,16 @@ class EventScraperApp:
         generator.generate_status_page(self.source_results, str(status_path), date_range)
         logger.info(f"Generated status page: {status_path}")
 
+        # Generate feedback page
+        feedback_path = output_dir / "feedback.html"
+        generator.generate_feedback_page(str(feedback_path))
+        logger.info(f"Generated feedback page: {feedback_path}")
+
+        # Generate changelog page
+        changelog_path = output_dir / "changelog.html"
+        generator.generate_changelog_page(str(changelog_path))
+        logger.info(f"Generated changelog page: {changelog_path}")
+
         # Generate text if configured
         if output_config.get("generate_text", False):
             text_path = output_dir / output_config["text_file"]
@@ -249,6 +267,31 @@ class EventScraperApp:
             logger.warning(f"Errors occurred for {len(self.errors)} sources:")
             for source, error in self.errors.items():
                 logger.warning(f"  {source}: {error}")
+
+    @staticmethod
+    def _is_inperson_international_conference(event: Event) -> bool:
+        """Check if an event is an in-person international conference (should be excluded)."""
+        if event.location_type != LocationType.IN_PERSON:
+            return False
+
+        title_lower = event.title.lower()
+        conference_keywords = [
+            "conference", "congress", "symposium", "summit",
+            "annual meeting", "world meeting",
+        ]
+        if not any(kw in title_lower for kw in conference_keywords):
+            return False
+
+        # Check for international indicators in title or location
+        international_indicators = [
+            "international", "european", "global", "world",
+            "asia", "pacific", "latin america",
+        ]
+        full_text = f"{title_lower} {(event.location_details or '').lower()}"
+        if any(ind in full_text for ind in international_indicators):
+            return True
+
+        return False
 
 
 def main():

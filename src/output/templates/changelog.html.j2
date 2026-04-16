@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog | Statistics Events Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1f2e;
+            --ink-light: #3d4663;
+            --ink-muted: #6b7394;
+            --paper: #fafbfd;
+            --paper-warm: #f5f3ef;
+            --card: #ffffff;
+            --accent: #e85d4c;
+            --accent-glow: rgba(232, 93, 76, 0.15);
+            --teal: #2d9596;
+            --teal-soft: rgba(45, 149, 150, 0.12);
+            --violet: #7c5cbf;
+            --violet-soft: rgba(124, 92, 191, 0.12);
+            --gold: #d4a847;
+            --gold-soft: rgba(212, 168, 71, 0.12);
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --border: #e8eaf0;
+            --border-subtle: #f0f1f5;
+            --shadow-sm: 0 1px 3px rgba(26, 31, 46, 0.04), 0 1px 2px rgba(26, 31, 46, 0.06);
+            --shadow-md: 0 4px 12px rgba(26, 31, 46, 0.06), 0 2px 4px rgba(26, 31, 46, 0.04);
+            --shadow-lg: 0 12px 40px rgba(26, 31, 46, 0.1), 0 4px 12px rgba(26, 31, 46, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.65;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background:
+                linear-gradient(135deg, var(--paper) 0%, var(--paper-warm) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 80px,
+                    var(--border-subtle) 80px,
+                    var(--border-subtle) 81px
+                );
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 40px;
+            animation: fadeSlideIn 0.6s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .header-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 1px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--ink-muted);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* Version sections */
+        .version-section {
+            margin-bottom: 40px;
+            animation: fadeSlideIn 0.5s ease-out backwards;
+        }
+
+        {% for i in range(10) %}
+        .version-section:nth-child({{ i + 1 }}) {
+            animation-delay: {{ i * 0.08 }}s;
+        }
+        {% endfor %}
+
+        .version-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .version-tag {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .version-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            background: var(--paper-warm);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+        }
+
+        .version-latest .version-tag {
+            color: var(--accent);
+        }
+
+        .version-latest .version-header {
+            border-bottom-color: var(--accent);
+        }
+
+        /* Change categories */
+        .change-category {
+            margin-bottom: 20px;
+        }
+
+        .category-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .category-new {
+            color: var(--green);
+            background: var(--green-soft);
+        }
+
+        .category-changed {
+            color: var(--teal);
+            background: var(--teal-soft);
+        }
+
+        .category-fixed {
+            color: var(--violet);
+            background: var(--violet-soft);
+        }
+
+        .change-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .change-list li {
+            position: relative;
+            padding: 6px 0 6px 20px;
+            font-size: 0.92rem;
+            color: var(--ink-light);
+            line-height: 1.55;
+        }
+
+        .change-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .category-new + .change-list li::before {
+            background: var(--green);
+            opacity: 0.5;
+        }
+
+        .category-changed + .change-list li::before {
+            background: var(--teal);
+            opacity: 0.5;
+        }
+
+        .category-fixed + .change-list li::before {
+            background: var(--violet);
+            opacity: 0.5;
+        }
+
+        .change-list strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* Animation */
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px 60px;
+            }
+
+            .version-header {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .version-date {
+                align-self: flex-start;
+            }
+        }
+
+        @media print {
+            body::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">&larr; Back to Events</a>
+            <div class="header-eyebrow">Version History</div>
+            <h1>Changelog</h1>
+            <p class="header-subtitle">
+                What's new, changed, and fixed in the Statistics Events Calendar.
+            </p>
+        </header>
+
+        <main>
+            {% for version in versions %}
+            <section class="version-section{% if loop.first %} version-latest{% endif %}">
+                <div class="version-header">
+                    <span class="version-tag">{{ version.tag }}</span>
+                    <span class="version-date">{{ version.date }}</span>
+                </div>
+
+                {% for category in version.categories %}
+                <div class="change-category">
+                    {% if "new" in category.name|lower %}
+                    <span class="category-label category-new">{{ category.name }}</span>
+                    {% elif "changed" in category.name|lower %}
+                    <span class="category-label category-changed">{{ category.name }}</span>
+                    {% elif "fixed" in category.name|lower %}
+                    <span class="category-label category-fixed">{{ category.name }}</span>
+                    {% else %}
+                    <span class="category-label category-changed">{{ category.name }}</span>
+                    {% endif %}
+                    <ul class="change-list">
+                        {% for item in category.entries %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </section>
+            {% endfor %}
+        </main>
+    </div>
+</body>
+</html>

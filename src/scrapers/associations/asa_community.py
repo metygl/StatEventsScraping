@@ -200,6 +200,10 @@ class ASACommunityGenericScraper(BaseScraper):
         match = re.search(r"(https?://(?:www\.)?eventbrite\.com/[^\s]+)", text)
         if match:
             return match.group(1)
+        # Try to find an event detail page URL (e.g., community.amstat.org/.../eventDetails)
+        match = re.search(r"(https?://community\.amstat\.org/[^\s]*(?:event|meeting|seminar)[^\s]*)", text, re.IGNORECASE)
+        if match:
+            return match.group(1)
         return None
 
 

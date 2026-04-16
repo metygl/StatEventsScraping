@@ -2,7 +2,9 @@
   "rewrites": [
     { "source": "/", "destination": "/output/events.html" },
     { "source": "/export", "destination": "/output/export.html" },
-    { "source": "/status", "destination": "/output/status.html" }
+    { "source": "/status", "destination": "/output/status.html" },
+    { "source": "/feedback", "destination": "/output/feedback.html" },
+    { "source": "/changelog", "destination": "/output/changelog.html" }
   ],
   "headers": [
     {

@@ -13,6 +13,9 @@ env/
 output/*
 !output/events.html
 !output/export.html
+!output/status.html
+!output/feedback.html
+!output/changelog.html
 logs/
 
 # IDE

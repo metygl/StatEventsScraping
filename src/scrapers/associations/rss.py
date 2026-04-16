@@ -97,6 +97,9 @@ class RSSScraper(BaseScraper):
         if not title:
             return None
 
+        # Normalize whitespace in title
+        title = " ".join(title.split())
+
         # Clean "(In person)" or "(Online)" from title
         location_hint = ""
         loc_match = re.search(r"\(([^)]*(?:person|online|virtual|hybrid)[^)]*)\)", title, re.IGNORECASE)
@@ -197,12 +200,16 @@ class RSSScraper(BaseScraper):
         """Extract speaker names."""
         speakers = []
 
-        match = re.search(
+        # Try multiple patterns for speaker/presenter names
+        for pattern in [
             r"(?:Speaker|Presenter|Chair)[s]?[:\s]+([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
-            text
-        )
-        if match:
-            speakers.append(match.group(1).strip())
+            r"(?:Organiser|Organizer)[s]?[:\s]+([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)",
+        ]:
+            match = re.search(pattern, text)
+            if match:
+                name = " ".join(match.group(1).strip().split())
+                if name and name not in speakers:
+                    speakers.append(name)
 
         return speakers
 

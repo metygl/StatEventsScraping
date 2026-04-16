@@ -50,7 +50,7 @@ sources:
   - name: "CTML Berkeley"
     url: "https://ctml.berkeley.edu/"
     scraper: "academic.ctml_berkeley"
-    enabled: true
+    enabled: false  # In-person only
 
   - name: "McGill Biostatistics"
     url: "https://www.mcgill.ca/epi-biostat-occh/seminars-events/seminars/biostatistics"
@@ -106,7 +106,7 @@ sources:
   - name: "ASA San Diego"
     url: "https://community.amstat.org/sdasa/home"
     scraper: "associations.asa_sandiego"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Philadelphia"
     url: "https://community.amstat.org/philadelphia/webinar"
@@ -177,19 +177,19 @@ sources:
   - name: "ASA Central Indiana"
     url: "https://community.amstat.org/asacentralindiana/home"
     scraper: "associations.asa_indiana"
-    enabled: true
+    enabled: false  # Generic community link
 
   # ========== ASA Community (Higher Logic) Chapters ==========
 
   - name: "ASA NYC Metro"
     url: "https://community.amstat.org/nycchapter/home"
     scraper: "associations.asa_nycmetro"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Chicago"
     url: "https://community.amstat.org/chicagochapter/home"
     scraper: "associations.asa_chicago"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA North Carolina"
     url: "https://community.amstat.org/northcarolina/home"
@@ -199,52 +199,52 @@ sources:
   - name: "ASA Florida"
     url: "https://community.amstat.org/floridachapter/home"
     scraper: "associations.asa_florida"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Houston Area"
     url: "https://community.amstat.org/Houston/home"
     scraper: "associations.asa_houston"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Colorado-Wyoming"
     url: "https://community.amstat.org/cwc/home"
     scraper: "associations.asa_coloradowyoming"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Wisconsin"
     url: "https://community.amstat.org/wisconsinchapter/home"
     scraper: "associations.asa_wisconsin"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Alabama-Mississippi"
     url: "https://community.amstat.org/alabamachapter/home"
     scraper: "associations.asa_alabamamississippi"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Kansas/Western Missouri"
     url: "https://community.amstat.org/KWMChapter/home"
     scraper: "associations.asa_kansaswesternmo"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Rochester"
     url: "https://community.amstat.org/Rochester/home"
     scraper: "associations.asa_rochester"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Iowa"
     url: "https://community.amstat.org/iowachapter/home"
     scraper: "associations.asa_iowa"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Mid-Missouri"
     url: "https://community.amstat.org/midmissouri/home"
     scraper: "associations.asa_midmissouri"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA St. Louis"
     url: "https://community.amstat.org/stlouischapter/home"
     scraper: "associations.asa_stlouis"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Connecticut"
     url: "https://community.amstat.org/connecticutchapter/home"
@@ -254,82 +254,82 @@ sources:
   - name: "ASA Kentucky"
     url: "https://community.amstat.org/kentucky/home"
     scraper: "associations.asa_kentucky"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Austin"
     url: "https://community.amstat.org/austinchapter/home"
     scraper: "associations.asa_austin"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA San Antonio"
     url: "https://community.amstat.org/sanantoniochapter/home"
     scraper: "associations.asa_sanantonio"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Western Tennessee"
     url: "https://community.amstat.org/westerntennesseechapter/home"
     scraper: "associations.asa_westerntn"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Oregon"
     url: "https://community.amstat.org/oregon/home"
     scraper: "associations.asa_oregon"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Utah"
     url: "https://community.amstat.org/utahchapter/home"
     scraper: "associations.asa_utah"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA South Florida"
     url: "https://community.amstat.org/southflorida/home"
     scraper: "associations.asa_southflorida"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Nebraska"
     url: "https://community.amstat.org/amstatnebraska/home"
     scraper: "associations.asa_nebraska"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Princeton-Trenton"
     url: "https://community.amstat.org/princetontrenton/home"
     scraper: "associations.asa_princetontrenton"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Albany"
     url: "https://community.amstat.org/ac/home"
     scraper: "associations.asa_albany"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Alaska"
     url: "https://community.amstat.org/AlaskaChapter/home"
     scraper: "associations.asa_alaska"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Central Arkansas"
     url: "https://community.amstat.org/crc/home"
     scraper: "associations.asa_centralarkansas"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Mid-Tennessee"
     url: "https://community.amstat.org/midtennesseechapter/home"
     scraper: "associations.asa_midtennessee"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Southern California"
     url: "https://community.amstat.org/SCASA/home"
     scraper: "associations.asa_southerncalifornia"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Orange County/Long Beach"
     url: "https://community.amstat.org/OCLB/home"
     scraper: "associations.asa_orangecountylb"
-    enabled: true
+    enabled: false  # Generic community link
 
   - name: "ASA Delaware"
     url: "https://community.amstat.org/delawarechapter/home"
     scraper: "associations.asa_delaware"
-    enabled: true
+    enabled: false  # Generic community link
 
   # ========== ASA Standalone Site Chapters ==========
 

@@ -103,13 +103,23 @@ class HarvardHSPHScraper(BaseScraper):
         # Extract speaker from page
         speakers = self._extract_speakers(page_text)
 
+        # Detect location type from page content
+        location_type = self.detect_location_type(page_text)
+        if location_type == LocationType.UNKNOWN:
+            location_type = LocationType.VIRTUAL  # Default for Harvard seminars
+
+        # Only include virtual or hybrid events
+        if location_type == LocationType.IN_PERSON:
+            self.logger.debug(f"Skipping in-person event: {title}")
+            return None
+
         return self.create_event(
             title=title,
             url=url,
             start_datetime=start_dt,
             end_datetime=end_dt,
             speakers=speakers,
-            location_type=LocationType.VIRTUAL,
+            location_type=location_type,
             cost="free",
             raw_date_text=f"{date_text} {time_text}",
         )
