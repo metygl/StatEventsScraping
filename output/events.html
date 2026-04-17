@@ -498,6 +498,52 @@
             box-shadow: var(--shadow-md);
         }
 
+        /* Feedback link */
+        .feedback-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--violet);
+            background: var(--violet-soft);
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feedback-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: var(--violet);
+            color: var(--card);
+        }
+
+        /* Changelog link (gear) */
+        .changelog-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+            color: var(--ink-muted);
+            background: var(--border-subtle);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .changelog-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            color: var(--gold);
+            background: rgba(212, 168, 71, 0.12);
+        }
+
         /* Status link */
         .status-link {
             font-family: 'JetBrains Mono', monospace;
@@ -610,7 +656,7 @@
                 </div>
                 
                 <div class="meta-item">
-                    <span class="meta-highlight">41 events</span>
+                    <span class="meta-highlight">27 events</span>
                 </div>
                 
                 <div class="meta-item">
@@ -618,10 +664,12 @@
                 </div>
                 
                 <a href="/export" class="export-link">&#128230; Export Events</a>
+                <a href="/feedback" class="feedback-link">&#128172; Feedback</a>
+                <a href="/changelog" class="changelog-link" title="Changelog">&#9881;</a>
             </div>
             <div class="header-updated">
                 <span class="meta-icon">&#128337;</span>
-                <span>Updated 2026-04-16 00:23:44 PST</span>
+                <span>Updated 2026-04-16 18:45:19 PST</span>
             </div>
         </header>
 
@@ -743,7 +791,7 @@
                         </div>
                         <div>
                             <div class="date-title">Monday</div>
-                            <div class="date-count">3 events</div>
+                            <div class="date-count">1 event</div>
                         </div>
                     </div>
 
@@ -778,70 +826,6 @@
                         </div>
                     </article>
                     
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/rna-seq-from-counts-to-conclusions" target="_blank" rel="noopener noreferrer">
-                                        RNA-seq: From Counts to Conclusions
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Estefania Mancini</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 20, 2026, 12:00-3:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                paid
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/introduction-to-survey-design" target="_blank" rel="noopener noreferrer">
-                                        Introduction to Survey Design
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Adam Berinsky</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 20, 2026, 5:00-9:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $439
-                            </span>
-                        </div>
-                    </article>
-                    
                 </section>
                 
                 <section class="date-section">
@@ -861,7 +845,7 @@
                         <div class="event-header">
                             <div>
                                 <h3 class="event-title">
-                                    <a href="https://psiweb.org/events/event-item/2026/04/21/default-calendar/enhancing-clinical-study-reporting-with-the-estimand-framework" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://www.psiweb.org/events/event-item/2026/04/21/default-calendar/enhancing-clinical-study-reporting-with-the-estimand-framework" target="_blank" rel="noopener noreferrer">
                                         Enhancing Clinical Study Reporting with the Estimand Framework
                                     </a>
                                 </h3>
@@ -897,74 +881,10 @@
                         </div>
                         <div>
                             <div class="date-title">Wednesday</div>
-                            <div class="date-count">7 events</div>
+                            <div class="date-count">2 events</div>
                         </div>
                     </div>
 
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/searching-for-systematic-reviews-advanced-design" target="_blank" rel="noopener noreferrer">
-                                        Searching for Systematic Reviews: Advanced Design...
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Julie Glanville</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 22, 2026, 12:00am PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                paid
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/computational-genomics-for-microbial-traits" target="_blank" rel="noopener noreferrer">
-                                        Computational Genomics for Microbial Traits (Free Seminar)
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Janani Ravi</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 22, 2026, 12:00am PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                paid
-                            </span>
-                        </div>
-                    </article>
                     
                     <article class="event-card">
                         <div class="event-header">
@@ -979,8 +899,7 @@
                         </div>
 
                         
-                        <p class="event-speakers">Organiser
-            Event</p>
+                        <p class="event-speakers">Organiser Event</p>
                         
 
                         <div class="event-meta">
@@ -991,68 +910,6 @@
 
                             <span class="badge badge-virtual">
                                 Virtual
-                            </span>
-
-                            <span class="badge badge-free">
-                                free
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/plotting-and-programming-in-python" target="_blank" rel="noopener noreferrer">
-                                        Plotting and Programming in Python
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">The Carpentries</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 22, 2026, 12:00-4:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $588
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://ctml.berkeley.edu/42226-stellarus-research-talks" target="_blank" rel="noopener noreferrer">
-                                        4/22/26: Stellarus Research Talks
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">CTML Berkeley</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 22, 2026, 12:00-1:30pm PST
-                            </span>
-
-                            <span class="badge badge-inperson">
-                                In-Person
                             </span>
 
                             <span class="badge badge-free">
@@ -1087,38 +944,6 @@
 
                             <span class="badge badge-free">
                                 free
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/applying-for-tenure-track-faculty-jobs" target="_blank" rel="noopener noreferrer">
-                                        Applying for Tenure-Track Faculty Jobs
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Arjun Mitra</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 22, 2026, 4:00-7:30pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $136
                             </span>
                         </div>
                     </article>
@@ -1181,15 +1006,7 @@
                         </div>
 
                         
-                        <p class="event-speakers">Organiser
-            
-            
-            
-        
-        
-            
-	
-                The</p>
+                        <p class="event-speakers">Organiser The</p>
                         
 
                         <div class="event-meta">
@@ -1248,7 +1065,7 @@
                         </div>
                         <div>
                             <div class="date-title">Friday</div>
-                            <div class="date-count">2 events</div>
+                            <div class="date-count">1 event</div>
                         </div>
                     </div>
 
@@ -1285,36 +1102,6 @@
                         </div>
                     </article>
                     
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/asa-sports-analytics-conference" target="_blank" rel="noopener noreferrer">
-                                        ASA Sports Analytics Conference
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 24, 2026, 4:00-10:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $51
-                            </span>
-                        </div>
-                    </article>
-                    
                 </section>
                 
                 <section class="date-section">
@@ -1325,102 +1112,10 @@
                         </div>
                         <div>
                             <div class="date-title">Monday</div>
-                            <div class="date-count">5 events</div>
+                            <div class="date-count">1 event</div>
                         </div>
                     </div>
 
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/foundations-of-research-design-and-data-science-2-0" target="_blank" rel="noopener noreferrer">
-                                        Foundations of Research Design and Data Science 2.0
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 27, 2026, 12:00am PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                paid
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/applied-research-in-the-ai-era" target="_blank" rel="noopener noreferrer">
-                                        Applied Research in the AI Era (Free Seminar)
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 27, 2026, 12:00am PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                paid
-                            </span>
-                        </div>
-                    </article>
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/hands-on-maxqda-training" target="_blank" rel="noopener noreferrer">
-                                        Hands-On MAXQDA Training
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Philip Adu</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 27, 2026, 3:00-6:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $324
-                            </span>
-                        </div>
-                    </article>
                     
                     <article class="event-card">
                         <div class="event-header">
@@ -1452,38 +1147,6 @@
                         </div>
                     </article>
                     
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/advanced-survey-design" target="_blank" rel="noopener noreferrer">
-                                        Advanced Survey Design
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Adam Berinsky</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 27, 2026, 6:00-9:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $438
-                            </span>
-                        </div>
-                    </article>
-                    
                 </section>
                 
                 <section class="date-section">
@@ -1503,7 +1166,7 @@
                         <div class="event-header">
                             <div>
                                 <h3 class="event-title">
-                                    <a href="https://psiweb.org/events/event-item/2026/04/28/default-calendar/psi-book-club-the-art-of-explanation---podcast" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://www.psiweb.org/events/event-item/2026/04/28/default-calendar/psi-book-club-the-art-of-explanation---podcast" target="_blank" rel="noopener noreferrer">
                                         PSI Book Club: The Art of Explanation - Podcast
                                     </a>
                                 </h3>
@@ -1604,15 +1267,7 @@
                         </div>
 
                         
-                        <p class="event-speakers">Organiser
-            
-            
-            
-        
-        
-            
-	
-                Prof Roy</p>
+                        <p class="event-speakers">Organiser Prof Roy, Prof Roy Ruddle</p>
                         
 
                         <div class="event-meta">
@@ -1641,7 +1296,7 @@
                         </div>
                         <div>
                             <div class="date-title">Wednesday</div>
-                            <div class="date-count">2 events</div>
+                            <div class="date-count">3 events</div>
                         </div>
                     </div>
 
@@ -1659,15 +1314,7 @@
                         </div>
 
                         
-                        <p class="event-speakers">Organiser
-            
-            
-            
-        
-        
-            
-	
-                Jessica Doohan</p>
+                        <p class="event-speakers">Organiser Jessica Doohan, Jessica Doohan</p>
                         
 
                         <div class="event-meta">
@@ -1690,6 +1337,36 @@
                         <div class="event-header">
                             <div>
                                 <h3 class="event-title">
+                                    <a href="https://healthpolicy.duke.edu/events/us-food-and-drug-administration-webinar-rct-duplicate-initiative-emulating-randomized" target="_blank" rel="noopener noreferrer">
+                                        U.S. Food and Drug Administration Webinar on the RCT-DUPLICATE Initiative: Emulating Randomized Clinical Trials with Non-Randomized Real-World Data Studies
+                                    </a>
+                                </h3>
+                            </div>
+                            <span class="event-source">Duke-Margolis</span>
+                        </div>
+
+                        
+
+                        <div class="event-meta">
+                            <span class="event-meta-item">
+                                <span class="event-meta-icon">&#9201;</span>
+                                April 29, 2026, 9:00-10:00am PST
+                            </span>
+
+                            <span class="badge badge-virtual">
+                                Virtual
+                            </span>
+
+                            <span class="badge badge-free">
+                                free
+                            </span>
+                        </div>
+                    </article>
+                    
+                    <article class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <h3 class="event-title">
                                     <a href="https://rss.org.uk/training-events/events/events-2026/section-groups/how-to-stay-up-to-date-as-a-data-scientist/" target="_blank" rel="noopener noreferrer">
                                         How to stay up to date as a data scientist?
                                     </a>
@@ -1699,8 +1376,7 @@
                         </div>
 
                         
-                        <p class="event-speakers">Organiser
-            Event</p>
+                        <p class="event-speakers">Organiser Event</p>
                         
 
                         <div class="event-meta">
@@ -1729,42 +1405,10 @@
                         </div>
                         <div>
                             <div class="date-title">Thursday</div>
-                            <div class="date-count">5 events</div>
+                            <div class="date-count">3 events</div>
                         </div>
                     </div>
 
-                    
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://instats.org/seminar/ai-multi-agent-workflows-in-r" target="_blank" rel="noopener noreferrer">
-                                        AI Multi-Agent Workflows in R
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">Instats Seminar</span>
-                        </div>
-
-                        
-                        <p class="event-speakers">Fodil Ihaddaden</p>
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 30, 2026, 5:00-11:00am PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-paid">
-                                $273
-                            </span>
-                        </div>
-                    </article>
                     
                     <article class="event-card">
                         <div class="event-header">
@@ -1858,36 +1502,6 @@
                         </div>
                     </article>
                     
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://community.amstat.org/wisconsinchapter/home" target="_blank" rel="noopener noreferrer">
-                                        ASA selected Milwaukee for the Symposium on Data Science and Statistics (SDSS) from April 28 to
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">ASA Wisconsin</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                April 30, 2026, 10:00pm PST
-                            </span>
-
-                            <span class="badge badge-virtual">
-                                Virtual
-                            </span>
-
-                            <span class="badge badge-free">
-                                free
-                            </span>
-                        </div>
-                    </article>
-                    
                 </section>
                 
                 <section class="date-section">
@@ -1898,7 +1512,7 @@
                         </div>
                         <div>
                             <div class="date-title">Friday</div>
-                            <div class="date-count">4 events</div>
+                            <div class="date-count">3 events</div>
                         </div>
                     </div>
 
@@ -1907,7 +1521,7 @@
                         <div class="event-header">
                             <div>
                                 <h3 class="event-title">
-                                    <a href="https://psiweb.org/events/event-item/2026/05/01/default-calendar/open-source-lunch-bites" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://www.psiweb.org/events/event-item/2026/05/01/default-calendar/open-source-lunch-bites" target="_blank" rel="noopener noreferrer">
                                         AIMS SIG - Open-Source Lunch Bites
                                     </a>
                                 </h3>
@@ -1999,36 +1613,6 @@
                         </div>
                     </article>
                     
-                    <article class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <h3 class="event-title">
-                                    <a href="https://ctml.berkeley.edu/5126-biostatistics-and-epidemiology-research-showcase" target="_blank" rel="noopener noreferrer">
-                                        5/1/26: Biostatistics and Epidemiology Research Showcase
-                                    </a>
-                                </h3>
-                            </div>
-                            <span class="event-source">CTML Berkeley</span>
-                        </div>
-
-                        
-
-                        <div class="event-meta">
-                            <span class="event-meta-item">
-                                <span class="event-meta-icon">&#9201;</span>
-                                May 01, 2026, 2:30-3:30pm PST
-                            </span>
-
-                            <span class="badge badge-inperson">
-                                In-Person
-                            </span>
-
-                            <span class="badge badge-free">
-                                free
-                            </span>
-                        </div>
-                    </article>
-                    
                 </section>
                 
                 <section class="date-section">
@@ -2048,7 +1632,7 @@
                         <div class="event-header">
                             <div>
                                 <h3 class="event-title">
-                                    <a href="https://psiweb.org/events/event-item/2026/05/05/default-calendar/connecting-the-false-discovery-rate-to-shrunk-estimates" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://www.psiweb.org/events/event-item/2026/05/05/default-calendar/connecting-the-false-discovery-rate-to-shrunk-estimates" target="_blank" rel="noopener noreferrer">
                                         Connecting the False Discovery Rate to Shrunk Estimates
                                     </a>
                                 </h3>
