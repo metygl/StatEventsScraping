@@ -184,11 +184,12 @@ class GMUScraper(BaseScraper):
         # "Dr.", "Prof.", "Speaker:", "Location:", or a name pattern
         title_parts = []
         for line in lines:
-            # Stop at speaker/location/meta lines
+            # Stop at speaker/location/meta/schedule lines
             if re.match(
                 r"^(?:Dr\.|Prof\.|Professor |Speaker|Location|"
                 r"This seminar|Abstract|Bio|Register|REGISTER|"
-                r"Please |Join us|Zoom|https?://)",
+                r"Please |Join us|Zoom|https?://|"
+                r"Schedule|Come see|Come join|RSVP|\d{1,2}:\d{2}\s*(?:am|pm|AM|PM))",
                 line, re.IGNORECASE
             ):
                 break
@@ -201,6 +202,9 @@ class GMUScraper(BaseScraper):
             title = " ".join(title_parts)
             # Clean up
             title = re.sub(r"\s+", " ", title).strip()
+            # If title is too long, it's likely a description, not a title
+            if len(title) > 150:
+                return None
             if len(title) > 10:
                 return title
 
