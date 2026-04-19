@@ -33,10 +33,8 @@ class TestDateParserParseDatetimeRange:
         start_dt, end_dt = DateParser.parse_datetime_range(text)
 
         assert start_dt.day == 15
-        # Time extraction preserves the literal time from text
-        # (timezone context is handled by individual scrapers)
-        assert start_dt.hour == 9
-        assert end_dt.hour == 10
+        assert start_dt.hour == 6
+        assert end_dt.hour == 7
 
     def test_date_only_no_time(self):
         """Test parsing date without time."""
@@ -71,9 +69,7 @@ class TestDateParserParseDatetimeRange:
         text = "January 15, 2026 12:00pm ET"
         start_dt, _ = DateParser.parse_datetime_range(text)
 
-        # Timezone is detected but time is preserved from text
-        # Result is tagged as PST (scrapers handle context-specific conversion)
-        assert start_dt.hour == 12
+        assert start_dt.hour == 9
         assert str(start_dt.tzinfo) == "America/Los_Angeles"
 
     def test_timezone_detection_cet(self):
@@ -81,8 +77,7 @@ class TestDateParserParseDatetimeRange:
         text = "January 14, 2026 6:00pm CET"
         start_dt, _ = DateParser.parse_datetime_range(text)
 
-        # Time is preserved from text, tagged as PST
-        assert start_dt.hour == 18
+        assert start_dt.hour == 9
         assert str(start_dt.tzinfo) == "America/Los_Angeles"
 
     def test_empty_text_raises_error(self):

@@ -13,6 +13,9 @@ from src.output.html_generator import HTMLGenerator, days_to_time_period
 from src.models.event import Event, LocationType
 
 
+VERCEL_ANALYTICS_SCRIPT = '<script defer src="/_vercel/insights/script.js"></script>'
+
+
 @pytest.fixture
 def sample_events(pst_timezone):
     """Sample events for testing."""
@@ -264,7 +267,7 @@ class TestGenerateExportPage:
             )
 
             content = output_path.read_text()
-            assert 'href="events.html"' in content
+            assert 'href="/"' in content
             assert "Back to Events" in content
 
 
@@ -382,3 +385,56 @@ class TestExportPageTimePeriod:
             )
             content = output_path.read_text()
             assert "two weeks" in content
+
+
+class TestVercelAnalytics:
+    """Tests for Vercel Web Analytics on generated HTML pages."""
+
+    def test_all_generated_html_pages_include_vercel_analytics(
+        self, html_generator, sample_events, date_range
+    ):
+        """Test that every generated HTML route includes Vercel Analytics."""
+        source_results = [
+            {
+                "name": "TestOrg",
+                "url": "https://example.com",
+                "enabled": True,
+                "status": "success",
+                "total_events": 3,
+                "in_range_events": 3,
+                "error_message": None,
+            }
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            patch_md = tmp_path / "PATCH.md"
+            patch_md.write_text(
+                "## v1.0.0 - 2026-01-01\n\n### Changed\n- Initial release\n",
+                encoding="utf-8",
+            )
+
+            output_paths = [
+                tmp_path / "events.html",
+                tmp_path / "export.html",
+                tmp_path / "status.html",
+                tmp_path / "feedback.html",
+                tmp_path / "changelog.html",
+            ]
+
+            html_generator.generate(sample_events, str(output_paths[0]), date_range)
+            html_generator.generate_export_page(
+                sample_events, str(output_paths[1]), date_range
+            )
+            html_generator.generate_status_page(
+                source_results, str(output_paths[2]), date_range
+            )
+            html_generator.generate_feedback_page(str(output_paths[3]))
+            html_generator.generate_changelog_page(
+                str(output_paths[4]), patch_md_path=str(patch_md)
+            )
+
+            for output_path in output_paths:
+                content = output_path.read_text(encoding="utf-8")
+                assert "window.va = window.va" in content
+                assert VERCEL_ANALYTICS_SCRIPT in content
